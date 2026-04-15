@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>前期ゼミナールI｜論文インタラクティブ読解</title>
+<title>前期ゼミナールI｜論文・ニュース読解資料</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -105,6 +105,29 @@
   }
   .tag-blue { background: #e3edf8; color: var(--primary); }
   .tag-yellow { background: #fef6e4; color: #b07d0a; }
+  .tag-green { background: #e6f4ea; color: #2e7d32; }
+  .tag-red { background: #fdecea; color: #c62828; }
+  .news-card {
+    background: var(--card);
+    border-radius: 10px;
+    box-shadow: 0 2px 16px rgba(26,58,92,0.10);
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: box-shadow 0.2s, transform 0.15s;
+    border-left: 4px solid #2e7d32;
+  }
+  .news-card:hover {
+    box-shadow: 0 6px 24px rgba(26,58,92,0.18);
+    transform: translateY(-2px);
+  }
+  .news-source {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
   .footer {
     text-align: center;
     margin-top: 48px;
@@ -125,7 +148,7 @@
 <div class="container">
   <div class="hero">
     <h1>📚 前期ゼミナールI</h1>
-    <p>論文インタラクティブ読解ページ一覧</p>
+    <p>論文・ニュース記事の読解資料一覧</p>
   </div>
 
   <div class="section-label">📖 論文リスト</div>
@@ -139,7 +162,19 @@
     <span class="tag tag-yellow">探索と活用</span>
   </a>
 
-  <div class="empty-hint">他の論文は順次追加予定です ✨</div>
+  <div style="margin-top:36px;" class="section-label">📰 ニュース記事</div>
+
+  <a class="news-card" href="https://36kr.jp/488767/" target="_blank" rel="noopener">
+    <div class="paper-title">ごみが多すぎて困った中国が、今や「ごみ不足」問題――ごみ発電大国の皮肉な悩み</div>
+    <div class="paper-authors">36Kr Japan — 2026年4月4日</div>
+    <div class="paper-desc">急速な都市化でごみ問題に直面した中国が、政府主導で1000ヶ所超のごみ焼却発電所を建設。しかしごみ分別の徹底により「燃やすごみが不足する」事態に。余剰技術は東南アジアへ展開。</div>
+    <span class="tag tag-green">環境</span>
+    <span class="tag tag-green">中国</span>
+    <span class="tag tag-red">エネルギー</span>
+    <span class="news-source">出典：36Kr Japan ↗</span>
+  </a>
+
+  <div class="empty-hint">他の資料は順次追加予定です ✨</div>
 
   <div class="footer">一橋大学｜前期ゼミナールI</div>
 </div>
