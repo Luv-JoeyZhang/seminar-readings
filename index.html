@@ -1,1251 +1,148 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スーパーマンかファンタスティック・フォーか？革新チームにおける知識の組み合わせと経験</title>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>前期ゼミナールI｜論文インタラクティブ読解</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --primary: #1a3a5c;
-    --accent: #e8392a;
-    --accent2: #f5a623;
+    --accent: #f5a623;
     --bg: #f4f6fa;
     --card: #ffffff;
     --text: #1e2a38;
     --muted: #6b7a8d;
     --border: #dde3ec;
-    --tab-h: 56px;
-    --radius: 10px;
-    --shadow: 0 2px 16px rgba(26,58,92,0.10);
   }
-  html { scroll-behavior: smooth; }
   body {
     font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', 'Helvetica Neue', Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
     font-size: 15px;
     line-height: 1.7;
-    overflow-x: hidden;
+    min-height: 100vh;
   }
-  /* STICKY TABS */
-  #tab-nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 1000;
-    background: var(--primary);
-    box-shadow: 0 3px 18px rgba(26,58,92,0.22);
-    display: flex;
-    align-items: stretch;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    height: var(--tab-h);
-  }
-  #tab-nav::-webkit-scrollbar { display: none; }
-  .tab-btn {
-    flex: 0 0 auto;
-    padding: 0 clamp(10px, 2vw, 22px);
-    height: var(--tab-h);
-    background: transparent;
-    border: none;
-    color: rgba(255,255,255,0.72);
-    font-size: clamp(12px, 1.5vw, 14px);
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-    border-bottom: 3px solid transparent;
-    transition: color 0.2s, border-color 0.2s, background 0.2s;
-    letter-spacing: 0.02em;
-  }
-  .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
-  .tab-btn.active {
-    color: var(--accent2);
-    border-bottom-color: var(--accent2);
-    background: rgba(255,255,255,0.07);
-  }
-  /* MAIN CONTENT */
-  #main-content {
-    max-width: 960px;
+  .container {
+    max-width: 800px;
     margin: 0 auto;
-    padding: calc(var(--tab-h) + 28px) 16px 48px;
+    padding: 40px 20px 60px;
   }
-  .section { display: none; }
-  .section.active { display: block; }
-  /* CARDS */
-  .card {
-    background: var(--card);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: clamp(16px, 3vw, 32px);
-    margin-bottom: 22px;
-    overflow: hidden;
-  }
-  .card-title {
-    font-size: clamp(15px, 2vw, 18px);
-    font-weight: 700;
-    color: var(--primary);
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .card-title .icon {
-    width: 28px; height: 28px;
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 15px;
-    flex-shrink: 0;
-  }
-  /* HERO BANNER */
   .hero {
     background: linear-gradient(135deg, var(--primary) 0%, #2d6a9f 100%);
-    border-radius: var(--radius);
-    padding: clamp(24px, 5vw, 48px) clamp(20px, 4vw, 40px);
+    border-radius: 12px;
+    padding: clamp(28px, 5vw, 48px) clamp(24px, 4vw, 40px);
     color: #fff;
-    margin-bottom: 22px;
+    margin-bottom: 32px;
     position: relative;
     overflow: hidden;
   }
   .hero::before {
     content: '';
     position: absolute;
-    right: -40px; top: -40px;
-    width: 220px; height: 220px;
+    right: -50px; top: -50px;
+    width: 240px; height: 240px;
     border-radius: 50%;
     background: rgba(255,255,255,0.06);
   }
   .hero h1 {
-    font-size: clamp(18px, 3.5vw, 28px);
+    font-size: clamp(20px, 3.5vw, 30px);
     font-weight: 800;
-    line-height: 1.3;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
-  .hero .subtitle {
-    font-size: clamp(12px, 1.8vw, 15px);
-    opacity: 0.82;
-    margin-bottom: 18px;
+  .hero p {
+    font-size: clamp(13px, 1.8vw, 15px);
+    opacity: 0.8;
   }
-  .hero .authors {
+  .section-label {
     font-size: 13px;
-    opacity: 0.7;
-    font-style: italic;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
   }
-  /* TAGS */
+  .paper-card {
+    background: var(--card);
+    border-radius: 10px;
+    box-shadow: 0 2px 16px rgba(26,58,92,0.10);
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: box-shadow 0.2s, transform 0.15s;
+    border-left: 4px solid var(--accent);
+  }
+  .paper-card:hover {
+    box-shadow: 0 6px 24px rgba(26,58,92,0.18);
+    transform: translateY(-2px);
+  }
+  .paper-title {
+    font-size: clamp(15px, 2vw, 17px);
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+  .paper-authors {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .paper-desc {
+    font-size: 13.5px;
+    color: #3a4a5c;
+    line-height: 1.6;
+  }
   .tag {
     display: inline-block;
-    padding: 3px 10px;
+    padding: 2px 10px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
-    margin: 3px 3px 3px 0;
+    margin-right: 6px;
+    margin-top: 8px;
   }
   .tag-blue { background: #e3edf8; color: var(--primary); }
-  .tag-red { background: #fdecea; color: var(--accent); }
   .tag-yellow { background: #fef6e4; color: #b07d0a; }
-  .tag-green { background: #e6f4ea; color: #2e7d32; }
-  /* COLLAPSIBLE */
-  .collapsible-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    user-select: none;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 0;
-  }
-  .collapsible-header h3 {
-    font-size: clamp(13px, 1.8vw, 15px);
-    font-weight: 700;
-    color: var(--primary);
-  }
-  .collapsible-arrow {
-    font-size: 18px;
-    color: var(--muted);
-    transition: transform 0.25s;
-    flex-shrink: 0;
-  }
-  .collapsible-arrow.open { transform: rotate(180deg); }
-  .collapsible-body {
-    padding-top: 14px;
-    font-size: 14px;
-    color: #3a4a5c;
-    line-height: 1.75;
-  }
-  /* STAT GRID */
-  .stat-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 14px;
-    margin-bottom: 18px;
-  }
-  .stat-box {
-    background: linear-gradient(135deg, #f0f5ff 0%, #e8f0fe 100%);
-    border-radius: 8px;
-    padding: 16px 14px;
+  .footer {
     text-align: center;
-    border: 1px solid #d0ddf5;
-  }
-  .stat-box .val {
-    font-size: clamp(20px, 3vw, 28px);
-    font-weight: 800;
-    color: var(--primary);
-    line-height: 1.1;
-  }
-  .stat-box .lbl {
-    font-size: 11px;
+    margin-top: 48px;
+    font-size: 12px;
     color: var(--muted);
-    margin-top: 4px;
-    font-weight: 500;
   }
-  /* HYPOTHESIS TABLE */
-  .hyp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .hyp-table th {
-    background: var(--primary);
-    color: #fff;
-    padding: 10px 12px;
-    text-align: left;
-    font-weight: 600;
-  }
-  .hyp-table td {
-    padding: 9px 12px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-  }
-  .hyp-table tr:nth-child(even) td { background: #f7f9fc; }
-  .badge {
-    display: inline-block;
-    padding: 2px 9px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 700;
-  }
-  .badge-support { background: #e6f4ea; color: #2e7d32; }
-  .badge-partial { background: #fef6e4; color: #b07d0a; }
-  .badge-reject { background: #fdecea; color: var(--accent); }
-  /* CHART WRAPPER */
-  .chart-wrap {
-    position: relative;
-    width: 100%;
-    max-height: 420px;
-  }
-  .chart-wrap canvas { max-height: 420px; }
-  /* QUOTE */
-  .quote-block {
-    border-left: 4px solid var(--accent2);
-    background: #fffbf0;
-    padding: 14px 18px;
-    border-radius: 0 8px 8px 0;
-    font-style: italic;
+  .empty-hint {
+    text-align: center;
+    color: var(--muted);
     font-size: 13px;
-    color: #5a4a2a;
-    margin: 14px 0;
-    line-height: 1.7;
+    padding: 20px 0 0;
+    font-style: italic;
   }
-  /* FINDING HIGHLIGHT */
-  .finding {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    padding: 12px 14px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    font-size: 13.5px;
-  }
-  .finding-pos { background: #e8f5e9; border: 1px solid #a5d6a7; }
-  .finding-neg { background: #fdecea; border: 1px solid #ef9a9a; }
-  .finding-neu { background: #e3f2fd; border: 1px solid #90caf9; }
-  .finding-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-  /* IMPLICATION LIST */
-  .impl-list { list-style: none; padding: 0; }
-  .impl-list li {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 13.5px;
-  }
-  .impl-list li:last-child { border-bottom: none; }
-  .impl-num {
-    flex-shrink: 0;
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    background: var(--primary);
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    margin-top: 1px;
-  }
-  /* RESPONSIVE */
-  @media (max-width: 600px) {
-    .stat-grid { grid-template-columns: repeat(2, 1fr); }
-    .hyp-table { font-size: 12px; }
-    .hyp-table th, .hyp-table td { padding: 7px 8px; }
-  }
-  @media (max-width: 380px) {
-    .stat-grid { grid-template-columns: 1fr 1fr; }
-  }
-  /* SECTION TITLE */
-  .section-heading {
-    font-size: clamp(16px, 2.5vw, 22px);
-    font-weight: 800;
-    color: var(--primary);
-    margin-bottom: 18px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--accent2);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .section-heading .dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--accent);
-    flex-shrink: 0;
-  }
-  /* TIMELINE */
-  .timeline { position: relative; padding-left: 28px; }
-  .timeline::before {
-    content: '';
-    position: absolute;
-    left: 8px; top: 0; bottom: 0;
-    width: 2px;
-    background: var(--border);
-  }
-  .tl-item {
-    position: relative;
-    margin-bottom: 18px;
-    font-size: 13.5px;
-  }
-  .tl-item::before {
-    content: '';
-    position: absolute;
-    left: -24px; top: 5px;
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    background: var(--accent2);
-    border: 2px solid #fff;
-    box-shadow: 0 0 0 2px var(--accent2);
-  }
-  .tl-year {
-    font-weight: 700;
-    color: var(--primary);
-    font-size: 12px;
-    margin-bottom: 2px;
-  }
-  /* TABLE SCROLL WRAPPER */
-  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  img { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 10px auto; }
 </style>
 </head>
 <body>
 
-<nav id="tab-nav" role="navigation" aria-label="メインナビゲーション">
-  <button class="tab-btn active" data-tab="overview">📋 研究概要</button>
-  <button class="tab-btn" data-tab="context">📚 コミック産業</button>
-  <button class="tab-btn" data-tab="theory">💡 理論枠組み</button>
-  <button class="tab-btn" data-tab="methods">🔬 研究方法</button>
-  <button class="tab-btn" data-tab="results">📊 研究結果</button>
-  <button class="tab-btn" data-tab="implications">🎯 経営的含意</button>
-</nav>
-
-<div id="main-content">
-
-  <!-- ===== OVERVIEW ===== -->
-  <div id="tab-overview" class="section active">
-    <div class="hero">
-      <h1>スーパーマンかファンタスティック・フォーか？<br>革新チームにおける知識の組み合わせと経験</h1>
-      <div class="subtitle">知識の多様性と経験がイノベーション成果の平均値と分散にどう影響するかを探る</div>
-      <div class="authors">Alva Taylor（ダートマス大学）&nbsp;&nbsp;·&nbsp;&nbsp;Henrich R. Greve（ノルウェー経営大学院BI）</div>
-    </div>
-
-    <div class="stat-grid">
-      <div class="stat-box"><div class="val">4,485</div><div class="lbl">分析対象コミック数</div></div>
-      <div class="stat-box"><div class="val">234</div><div class="lbl">出版社数</div></div>
-      <div class="stat-box"><div class="val">1972–1996</div><div class="lbl">研究対象期間</div></div>
-      <div class="stat-box"><div class="val">0.99</div><div class="lbl">価格データの相関</div></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#e3edf8">🎯</span>核心的な研究課題</div>
-      <div class="finding finding-neu">
-        <span class="finding-icon">❓</span>
-        <span>革新的な製品を生み出すチームに必要な知識と経験の構造は、高品質な定番製品を開発するチームとは異なるべきか？</span>
-      </div>
-      <div class="finding finding-neu">
-        <span class="finding-icon">❓</span>
-        <span>チームによるイノベーションと個人によるイノベーションの推進要因には、本質的な違いがあるのか？</span>
-      </div>
-      <p style="font-size:13.5px;color:#3a4a5c;margin-top:10px;">本研究は<strong>平均パフォーマンス</strong>（高品質で安定した成果）と<strong>パフォーマンスの分散</strong>（極端な成功または失敗をもたらす画期的イノベーション）を区別し、コミック出版業界で実証分析を行った。</p>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fdecea">🔑</span>主要な発見</div>
-      <div class="finding finding-pos">
-        <span class="finding-icon">✅</span>
-        <span><strong>知識の多様性</strong>（ジャンル横断的な経験）はイノベーションの分散を有意に高め、その効果は個人クリエイターの方がチームよりも強い。</span>
-      </div>
-      <div class="finding finding-pos">
-        <span class="finding-icon">✅</span>
-        <span><strong>チーム協働経験</strong>はパフォーマンスの平均値と分散の両方を向上させる――探索と活用の双方を促進する。</span>
-      </div>
-      <div class="finding finding-neg">
-        <span class="finding-icon">⚠️</span>
-        <span><strong>大規模出版社</strong>と<strong>高い作業負荷</strong>は、いずれもパフォーマンス水準に負の影響を与えた（仮説と逆の結果）。</span>
-      </div>
-      <div class="finding finding-pos">
-        <span class="finding-icon">✅</span>
-        <span><strong>個人クリエイター</strong>は多様な知識をより効果的に統合でき、知識の多様性においてチームよりも強いイノベーション優位性を発揮する。</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#e6f4ea">📌</span>研究の貢献</div>
-      <ul class="impl-list">
-        <li><span class="impl-num">1</span><span>イノベーション成果の<strong>平均効果</strong>と<strong>分散効果</strong>を初めて同時に分析し、正の結果のみに注目してきた研究のギャップを埋めた。</span></li>
-        <li><span class="impl-num">2</span><span>探索と活用は対立するものではなく、同じチーム特性が両方を促進できることを明らかにした。鍵は<strong>タスクの目標設定</strong>であり、チーム構成ではない。</span></li>
-        <li><span class="impl-num">3</span><span><strong>深い知識理解</strong>（単なる情報への接触ではなく）がイノベーションを駆動する核心要素であることを実証した。</span></li>
-        <li><span class="impl-num">4</span><span><strong>実際の商業価値</strong>（コミックのコレクター価格）を用いて創造的チーム編成の効果を測定する実証手法を提供した。</span></li>
-      </ul>
-    </div>
+<div class="container">
+  <div class="hero">
+    <h1>📚 前期ゼミナールI</h1>
+    <p>論文インタラクティブ読解ページ一覧</p>
   </div>
 
-  <!-- ===== CONTEXT ===== -->
-  <div id="tab-context" class="section">
-    <h2 class="section-heading"><span class="dot"></span>コミック産業の背景</h2>
+  <div class="section-label">📖 論文リスト</div>
 
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fef6e4">📖</span>なぜコミック産業を選んだのか？</div>
-      <p style="font-size:13.5px;color:#3a4a5c;margin-bottom:12px;">コミック出版業界は独自のデータ上の利点を提供し、本研究に必要な全ての条件を満たしている：</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
-        <div style="background:#f0f5ff;border-radius:8px;padding:12px;font-size:13px;"><strong>🎨 クリエイターの特定可能性</strong><br>個人・チームともに追跡可能</div>
-        <div style="background:#f0f5ff;border-radius:8px;padding:12px;font-size:13px;"><strong>💰 客観的な価値測定</strong><br>コレクター市場価格を成果指標として利用</div>
-        <div style="background:#f0f5ff;border-radius:8px;padding:12px;font-size:13px;"><strong>📊 複数作品の関連付け</strong><br>クリエイターと複数作品のリンクが可能</div>
-        <div style="background:#f0f5ff;border-radius:8px;padding:12px;font-size:13px;"><strong>🏆 イノベーションの重要性</strong><br>市場とクリエイター双方が革新的価値を認識</div>
-      </div>
-    </div>
+  <a class="paper-card" href="taylor-greve-2006.html">
+    <div class="paper-title">スーパーマンかファンタスティック・フォーか？革新チームにおける知識の組み合わせと経験</div>
+    <div class="paper-authors">Taylor, A. & Greve, H. R. (2006) — Academy of Management Journal, 49(4), 723–740</div>
+    <div class="paper-desc">知識の多様性と協働経験がイノベーション成果の平均値と分散にどう影響するかを、コミック出版業界のデータで実証分析。</div>
+    <span class="tag tag-blue">イノベーション</span>
+    <span class="tag tag-blue">チーム</span>
+    <span class="tag tag-yellow">探索と活用</span>
+  </a>
 
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fdecea">📅</span>業界の発展タイムライン</div>
-      <div class="timeline">
-        <div class="tl-item"><div class="tl-year">1897年</div>米国初のコミック『イエロー・キッド』が出版され、コミック産業が正式に始まる。</div>
-        <div class="tl-item"><div class="tl-year">1938年</div>DCコミックスが『スーパーマン』（Action Comics #1）を発表し、業界の支配的地位を確立。</div>
-        <div class="tl-item"><div class="tl-year">1961年</div>スタン・リーとジャック・カービーが『ファンタスティック・フォー』を創作。ヒーローが現実的な悩みを持つという新たな手法を開拓。</div>
-        <div class="tl-item"><div class="tl-year">1954年</div>コミック業界が自主規制を導入し、コミックス・コード・オーソリティ（CCA）を設立。イノベーションが厳しく制限される。</div>
-        <div class="tl-item"><div class="tl-year">1971年</div>マーベルが自主規制を破り、現代コミック時代が幕を開ける。イノベーションが再び活性化。</div>
-        <div class="tl-item"><div class="tl-year">1972–1996年</div><strong>本研究のデータ対象期間</strong>：自主規制終了後の現代コミック黄金期。</div>
-        <div class="tl-item"><div class="tl-year">1996年以降</div>投機バブルの崩壊。マーベルが破産申請し、業界構造が激変（本研究はここで終了）。</div>
-      </div>
-    </div>
+  <div class="empty-hint">他の論文は順次追加予定です ✨</div>
 
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#e6f4ea">🎭</span>ジャンル（Genre）の役割</div>
-      <p style="font-size:13.5px;color:#3a4a5c;margin-bottom:10px;">コミックのジャンルは、クリエイターと読者に共通の期待とスタイルの枠組みを提供する。Comicbaseはコミックを<strong>22のジャンル</strong>に分類しており、以下が含まれる：</p>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
-        <span class="tag tag-blue">スーパーヒーロー</span><span class="tag tag-blue">西部劇</span><span class="tag tag-blue">コメディ</span>
-        <span class="tag tag-blue">ファンタジー</span><span class="tag tag-blue">ホラー</span><span class="tag tag-blue">犯罪</span>
-        <span class="tag tag-blue">SF</span><span class="tag tag-blue">ノンフィクション</span><span class="tag tag-blue">ロマンス</span>
-        <span class="tag tag-yellow">ジャンル横断的融合</span>
-      </div>
-      <div class="quote-block">
-        「ジャンル横断的な融合作品は、創造的なブレイクスルーの可能性を秘める一方、二つのジャンルの要求を同時に満たすという課題と、市場に拒否されるリスクも伴う。」
-      </div>
-      <p style="font-size:13px;color:var(--muted);">『タイム』誌の2004年コミックトップ10リストでは、ジャンルの境界を成功裏に越えた作品が多数選出された。一方、同年のワーストリストにも、ジャンル融合を試みた作品が複数含まれていた。</p>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#e3edf8">📈</span>価値評価の方法</div>
-      <div class="stat-grid">
-        <div class="stat-box"><div class="val">0.92</div><div class="lbl">隣接年の価格相関（平均）</div></div>
-        <div class="stat-box"><div class="val">76%</div><div class="lbl">専門家のトップ25革新的コミックの平均一致率</div></div>
-        <div class="stat-box"><div class="val">64%</div><div class="lbl">専門家が認定した革新的コミックが価格上位10%に該当</div></div>
-        <div class="stat-box"><div class="val">κ=0.67</div><div class="lbl">トップ10革新的コミックの評価者間一致度</div></div>
-      </div>
-      <p style="font-size:13px;color:var(--muted);">コレクター価値は、Amabileの合意に基づく評価技法の自然な形態である――コレクターは独立した専門家判断を提供し、絶対的な基準ではなく相互比較に基づいて評価する。</p>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fef6e4">🏆</span>代表的な革新的コミックの事例</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
-        <div style="border:1px solid var(--border);border-radius:8px;padding:14px;">
-          <div style="font-weight:700;color:var(--primary);margin-bottom:4px;">『マウス』（1987）</div>
-          <div style="font-size:12px;color:var(--muted);">全米図書批評家賞にノミネートされ、ピューリッツァー賞を受賞した初のコミック</div>
-        </div>
-        <div style="border:1px solid var(--border);border-radius:8px;padding:14px;">
-          <div style="font-weight:700;color:var(--primary);margin-bottom:4px;">『アメイジング・ファンタジー』#15（1962）</div>
-          <div style="font-size:12px;color:var(--muted);">個人的な悩みを持つヒーロー――スパイダーマンの初登場</div>
-        </div>
-        <div style="border:1px solid var(--border);border-radius:8px;padding:14px;">
-          <div style="font-weight:700;color:var(--primary);margin-bottom:4px;">『ラブ・アンド・ロケッツ』（1982）</div>
-          <div style="font-size:12px;color:var(--muted);">民族的な感受性とスタイルの複雑さを示した画期的作品</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== THEORY ===== -->
-  <div id="tab-theory" class="section">
-    <h2 class="section-heading"><span class="dot"></span>理論的枠組みと研究仮説</h2>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#e3edf8">⚖️</span>探索 vs. 活用：核心的な緊張関係</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
-        <div style="background:#e8f5e9;border-radius:8px;padding:14px;border:1px solid #a5d6a7;">
-          <div style="font-weight:700;color:#2e7d32;margin-bottom:6px;">🔄 活用（Exploitation）</div>
-          <ul style="font-size:13px;color:#3a4a5c;padding-left:16px;line-height:1.8;">
-            <li>既存知識の精緻化</li>
-            <li>平均パフォーマンスの向上</li>
-            <li>パフォーマンス分散の低減</li>
-            <li>漸進的改善</li>
-          </ul>
-        </div>
-        <div style="background:#fff3e0;border-radius:8px;padding:14px;border:1px solid #ffcc80;">
-          <div style="font-weight:700;color:#e65100;margin-bottom:6px;">🚀 探索（Exploration）</div>
-          <ul style="font-size:13px;color:#3a4a5c;padding-left:16px;line-height:1.8;">
-            <li>多様な知識の組み合わせ</li>
-            <li>パフォーマンス分散の増大</li>
-            <li>極端な結果の発生</li>
-            <li>画期的イノベーション</li>
-          </ul>
-        </div>
-      </div>
-      <div class="finding finding-pos">
-        <span class="finding-icon">💡</span>
-        <span><strong>核心的な洞察：</strong>本研究は、探索を駆動する要因が活用も同時に駆動することを発見した――違いは<strong>タスクの目標</strong>にあり、チーム構成にはない。</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fef6e4">📐</span>研究仮説の体系</div>
-      <div class="table-scroll">
-        <table class="hyp-table">
-          <thead>
-            <tr>
-              <th style="width:60px">仮説</th>
-              <th>核心的内容</th>
-              <th style="width:80px">効果の種類</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>H1</strong></td>
-              <td>クリエイター数が多いほど、極端な結果（最良または最悪）が生じやすい</td>
-              <td><span class="tag tag-red">分散↑</span></td>
-            </tr>
-            <tr>
-              <td><strong>H2</strong></td>
-              <td>知識の多様性が高いほど、極端な結果が生じやすい</td>
-              <td><span class="tag tag-red">分散↑</span></td>
-            </tr>
-            <tr>
-              <td><strong>H3</strong></td>
-              <td>知識の多様性が極端な結果に与える効果は、チームよりも個人クリエイターの方が大きい</td>
-              <td><span class="tag tag-red">分散↑</span></td>
-            </tr>
-            <tr>
-              <td><strong>H4</strong></td>
-              <td>チーム協働経験が豊富であるほど、極端な結果が生じやすい</td>
-              <td><span class="tag tag-red">分散↑</span></td>
-            </tr>
-            <tr>
-              <td><strong>H5</strong></td>
-              <td>チーム協働経験が豊富であるほど、平均パフォーマンスが高い</td>
-              <td><span class="tag tag-green">平均↑</span></td>
-            </tr>
-            <tr>
-              <td><strong>H6</strong></td>
-              <td>作業負荷が大きいほど、平均パフォーマンスが高い（学習曲線効果）</td>
-              <td><span class="tag tag-green">平均↑</span></td>
-            </tr>
-            <tr>
-              <td><strong>H7</strong></td>
-              <td>クリエイターの在職期間が長いほど、平均パフォーマンスが高い</td>
-              <td><span class="tag tag-green">平均↑</span></td>
-            </tr>
-            <tr>
-              <td><strong>H8</strong></td>
-              <td>組織資源が豊富であるほど、平均パフォーマンスが高い</td>
-              <td><span class="tag tag-green">平均↑</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#e6f4ea">🧠</span>知識組み合わせの二つの源泉</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
-        <div>
-          <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:14px;">💼 知識の利用可能性（Availability）</div>
-          <ul style="font-size:13px;color:#3a4a5c;padding-left:16px;line-height:1.9;">
-            <li>多様な知識領域がより多くの革新的な組み合わせを提供</li>
-            <li>幅広い探索がより多くの創造的変異を生み出す</li>
-            <li>チームメンバーの多様性が知識プールを拡大</li>
-            <li>個人もキャリア経験を通じて複数領域の知識を蓄積可能</li>
-          </ul>
-        </div>
-        <div>
-          <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:14px;">⚙️ 知識の適用能力（Ability）</div>
-          <ul style="font-size:13px;color:#3a4a5c;padding-left:16px;line-height:1.9;">
-            <li>深い理解が境界を越えるための前提条件</li>
-            <li>チーム協働経験がコミュニケーションコストを低減</li>
-            <li>個人による統合は調整が不要でより効率的</li>
-            <li>プロセスロス（Process Loss）がチームの優位性を弱める</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fdecea">⚡</span>個人 vs. チーム：重要な違い</div>
-      <div class="quote-block">
-        「一人で仕事をすれば、焦点は一つ――アート、ライティング、すべてが純粋に自分のビジョンに駆動され、妥協する必要がない。」――受賞コミッククリエイター James Sturm
-      </div>
-      <p style="font-size:13.5px;color:#3a4a5c;margin-top:10px;">個人が多様な知識を統合する際には、チームに伴う調整問題や対人衝突が存在しないため、知識の多様性をイノベーションのパフォーマンス分散により効果的に変換できる。チームはより幅広い知識にアクセスできるが、コミュニケーションコストと調整ロスがその優位性の一部を相殺する。</p>
-    </div>
-  </div>
-
-  <!-- ===== METHODS ===== -->
-  <div id="tab-methods" class="section">
-    <h2 class="section-heading"><span class="dot"></span>研究方法</h2>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#e3edf8">📦</span>データソースとサンプル</div>
-      <div class="stat-grid">
-        <div class="stat-box"><div class="val">4,485</div><div class="lbl">最終分析対象コミック数</div></div>
-        <div class="stat-box"><div class="val">234</div><div class="lbl">出版社数</div></div>
-        <div class="stat-box"><div class="val">54%</div><div class="lbl">Marvel+DCの割合</div></div>
-        <div class="stat-box"><div class="val">2003年</div><div class="lbl">コレクター価値評価年</div></div>
-      </div>
-      <div style="font-size:13.5px;color:#3a4a5c;margin-top:10px;">
-        <strong>主要データソース：</strong>Comicbase電子データベース（2004年）。補助データ：2003年Overstreetコミック価格ガイド、2002年Standard Catalog of Comics。2つの価格データソース間の相関は<strong>0.99</strong>。
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fef6e4">📏</span>主要変数の定義</div>
-      <div id="coll-vars">
-        <div class="collapsible-header" onclick="toggleCollapsible(this)">
-          <h3>従属変数：コミックのコレクター価値</h3>
-          <span class="collapsible-arrow open">▼</span>
-        </div>
-        <div class="collapsible-body">
-          年内で標準化されたコレクター市場価値（平均=0、標準偏差=1）。<strong>パフォーマンス水準</strong>（平均効果）と<strong>パフォーマンス偏差</strong>（分散効果、すなわち平均からの絶対偏差）の両方を分析。
-        </div>
-      </div>
-      <div style="margin-top:12px;">
-        <div class="collapsible-header" onclick="toggleCollapsible(this)">
-          <h3>独立変数：知識と経験の指標</h3>
-          <span class="collapsible-arrow open">▼</span>
-        </div>
-        <div class="collapsible-body">
-          <ul style="padding-left:16px;line-height:2;font-size:13.5px;">
-            <li><strong>クリエイター数</strong>：コミックに参加したライターとアーティストの合計数</li>
-            <li><strong>ジャンル経験（Genre Experience）</strong>：クリエイターが過去1年間に関与した異なるジャンル数（重複を除く）</li>
-            <li><strong>チーム経験（Team Experience）</strong>：当該クリエイターチームがそれまでに協働した回数</li>
-            <li><strong>平均作業負荷</strong>：クリエイターの過去1年間の平均制作コミック数</li>
-            <li><strong>在職期間</strong>：チーム内で最も長い職業年数</li>
-            <li><strong>出版社規模</strong>：出版数、総発行部数、関連クリエイター数の標準化総合指標（α=0.92）</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#e6f4ea">🔧</span>モデル仕様</div>
-      <p style="font-size:13.5px;color:#3a4a5c;margin-bottom:12px;">頑健性の検証として3つのモデリング手法を採用：</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
-        <div style="background:#f7f9fc;border-radius:8px;padding:12px;font-size:13px;border:1px solid var(--border);">
-          <strong>手法1</strong><br>標準化パフォーマンス水準と偏差の線形回帰（主要手法）
-        </div>
-        <div style="background:#f7f9fc;border-radius:8px;padding:12px;font-size:13px;border:1px solid var(--border);">
-          <strong>手法2</strong><br>パーセンタイル順位の線形回帰（相対順位に注目）
-        </div>
-        <div style="background:#f7f9fc;border-radius:8px;padding:12px;font-size:13px;border:1px solid var(--border);">
-          <strong>手法3</strong><br>上下1%の極端値を除外した線形回帰（外れ値の影響を検証）
-        </div>
-      </div>
-      <p style="font-size:13px;color:var(--muted);margin-top:10px;">3つの手法の結果はほぼ一致しており、本論文では手法1の結果を報告。すべての独立変数は1年のラグを設定。</p>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fdecea">📊</span>記述統計（主要変数）</div>
-      <div class="chart-wrap" style="max-height:320px;">
-        <canvas id="chart-desc"></canvas>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== RESULTS ===== -->
-  <div id="tab-results" class="section">
-    <h2 class="section-heading"><span class="dot"></span>研究結果</h2>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#e3edf8">✅</span>仮説検証の結果一覧</div>
-      <div class="table-scroll">
-        <table class="hyp-table">
-          <thead>
-            <tr>
-              <th>仮説</th>
-              <th>予測方向</th>
-              <th>実証結果</th>
-              <th>支持状況</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>H1</strong> クリエイター数→分散↑</td>
-              <td>正</td>
-              <td>標準化偏差で有意に正；パーセンタイル偏差では非有意</td>
-              <td><span class="badge badge-partial">部分的に支持</span></td>
-            </tr>
-            <tr>
-              <td><strong>H2</strong> ジャンル経験→分散↑</td>
-              <td>正</td>
-              <td>モデル2で有意に正（交互作用項投入後は主効果が非有意）</td>
-              <td><span class="badge badge-partial">部分的に支持</span></td>
-            </tr>
-            <tr>
-              <td><strong>H3</strong> 個人＞チームのジャンル経験効果</td>
-              <td>交互作用で正</td>
-              <td>交互作用項が有意に正（モデル4）</td>
-              <td><span class="badge badge-support">支持</span></td>
-            </tr>
-            <tr>
-              <td><strong>H4</strong> チーム経験→分散↑</td>
-              <td>正</td>
-              <td>高度に有意に正</td>
-              <td><span class="badge badge-support">支持</span></td>
-            </tr>
-            <tr>
-              <td><strong>H5</strong> チーム経験→平均↑</td>
-              <td>正</td>
-              <td>高度に有意に正</td>
-              <td><span class="badge badge-support">支持</span></td>
-            </tr>
-            <tr>
-              <td><strong>H6</strong> 作業負荷→平均↑</td>
-              <td>正</td>
-              <td>負で限界的に有意（予測と逆）</td>
-              <td><span class="badge badge-reject">不支持</span></td>
-            </tr>
-            <tr>
-              <td><strong>H7</strong> 在職期間→平均↑</td>
-              <td>正</td>
-              <td>非有意</td>
-              <td><span class="badge badge-reject">不支持</span></td>
-            </tr>
-            <tr>
-              <td><strong>H8</strong> 組織資源→平均↑</td>
-              <td>正</td>
-              <td>負で有意（予測と逆）</td>
-              <td><span class="badge badge-reject">不支持</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fef6e4">📊</span>主要な回帰係数の可視化</div>
-      <div class="chart-wrap">
-        <canvas id="chart-coef"></canvas>
-      </div>
-      <p style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center;">注：係数は標準化パフォーマンス偏差の回帰（モデル2/4）に基づき、各変数がイノベーション分散に与える影響の方向と相対的な大きさを反映</p>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#e6f4ea">🔍</span>個人 vs. チーム：交互作用効果</div>
-      <div class="chart-wrap">
-        <canvas id="chart-interact"></canvas>
-      </div>
-      <p style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center;">ジャンル経験がパフォーマンス偏差に与える影響：個人クリエイターの曲線は約3ジャンルでチームを上回り、より強い革新的統合能力を示す</p>
-      <div style="margin-top:14px;">
-        <img src="https://pub-cdn.sider.ai/u/U0R7HR91ZX5/file/48d24cca-9065-48dd-b9ac-920ac1abcc73/af40b068635bdc03d830ceea3951c058b394d0a22f4a53f3d35fe497f4a7e102.jpg" alt="交互作用効果図：パフォーマンス水準" style="max-width:100%;">
-        <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:4px;">図2a：ジャンル経験とクリエイタータイプのパフォーマンス水準に対する交互作用効果</p>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fdecea">💡</span>予想外の発見</div>
-      <div class="finding finding-pos">
-        <span class="finding-icon">🌟</span>
-        <span><strong>ジャンル経験は平均値と分散の両方を向上させる：</strong>幅広いジャンル横断的な専門知識は、イノベーション分散を増大させるだけでなく、平均パフォーマンス水準も有意に向上させる。これは探索-活用のトレードオフという従来の仮定に挑戦する発見である。</span>
-      </div>
-      <div class="finding finding-neg">
-        <span class="finding-icon">📉</span>
-        <span><strong>作業負荷の増加はパフォーマンスを低下させる：</strong>作業負荷の急増（前年の5倍超）はパフォーマンス水準と分散の両方を低下させ、創造的作業における過重負荷の弊害を示した。</span>
-      </div>
-      <div class="finding finding-neg">
-        <span class="finding-icon">🏢</span>
-        <span><strong>大規模組織はイノベーションを抑制する：</strong>出版社の規模が大きいほどパフォーマンスが低い。インタビューにより、大規模出版社の制約がクリエイターの仕事の質を低下させていることが確認された。</span>
-      </div>
-      <div class="finding finding-pos">
-        <span class="finding-icon">🔗</span>
-        <span><strong>経験は多様な知識と組み合わさる必要がある：</strong>単一ジャンルの経験しかないチームでは、経験の効果が完全に相殺される――経験は多様な知識の背景がある場合のみ、イノベーション分散を高める。</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#e3edf8">📉</span>コミック価値の分布（4つの時期）</div>
-      <img src="https://pub-cdn.sider.ai/u/U0R7HR91ZX5/file/48d24cca-9065-48dd-b9ac-920ac1abcc73/fc22231b9c2d6cda7c47bee2798a3ce1ac61f1a9f7c61987c1e799f4769cb5f4.jpg" alt="コミック価値の分布図" style="max-width:100%;">
-      <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:6px;">図1：1977年、1982年、1987年、1992年のコミック価値分布――大多数が中央に集中し、両端に極端な値が存在</p>
-    </div>
-  </div>
-
-  <!-- ===== IMPLICATIONS ===== -->
-  <div id="tab-implications" class="section">
-    <h2 class="section-heading"><span class="dot"></span>経営的含意と研究の限界</h2>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#e3edf8">🎯</span>核心的な経営上の提言</div>
-      <ul class="impl-list">
-        <li>
-          <span class="impl-num">1</span>
-          <div>
-            <strong>「スーパーマン」型の個人を優先的に探す</strong><br>
-            <span style="font-size:13px;color:var(--muted);">複数の知識領域に深い理解を持つ個人は、イノベーション統合においてチームを上回る。そのような人材がいない場合にチーム編成を検討すべき。</span>
-          </div>
-        </li>
-        <li>
-          <span class="impl-num">2</span>
-          <div>
-            <strong>キャリア経験の多様性を管理する</strong><br>
-            <span style="font-size:13px;color:var(--muted);">チーム編成時にメンバーのキャリア経験を考慮し、キャリア開発パスを能動的に管理して、組織が幅広い知識の蓄積を持つようにする。</span>
-          </div>
-        </li>
-        <li>
-          <span class="impl-num">3</span>
-          <div>
-            <strong>チームメンバーの深い知識を確保する</strong><br>
-            <span style="font-size:13px;color:var(--muted);">クロスファンクショナルチームでは、各メンバーが担当する知識領域に対する深い理解が必要であり、単に「触れたことがある」だけでは不十分。</span>
-          </div>
-        </li>
-        <li>
-          <span class="impl-num">4</span>
-          <div>
-            <strong>協働経験のあるチームを優先する</strong><br>
-            <span style="font-size:13px;color:var(--muted);">過去に協働した履歴のあるチームは、探索的タスクでも活用的タスクでもより優れた成果を出すため、新たに編成されたチームよりも優先すべき。</span>
-          </div>
-        </li>
-        <li>
-          <span class="impl-num">5</span>
-          <div>
-            <strong>タスク目標によって探索-活用のバランスを調整する</strong><br>
-            <span style="font-size:13px;color:var(--muted);">同じチーム構成でも異なる目標に対応できる。マネジャーはタスク目標の設定と事前のオプション選別によって探索と活用のバランスを調整すべきであり、頻繁なチーム再編は不要。</span>
-          </div>
-        </li>
-        <li>
-          <span class="impl-num">6</span>
-          <div>
-            <strong>大規模組織のイノベーション抑制効果に注意する</strong><br>
-            <span style="font-size:13px;color:var(--muted);">大規模組織の標準化されたプロセスがクリエイターの自由度を制限する可能性がある。マネジャーはイノベーションチームに比較的柔軟な作業環境を積極的に創出する必要がある。</span>
-          </div>
-        </li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fef6e4">📊</span>探索 vs. 活用：駆動要因の比較</div>
-      <div class="chart-wrap">
-        <canvas id="chart-compare"></canvas>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fdecea">⚠️</span>研究の限界</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
-        <div style="background:#fdecea;border-radius:8px;padding:14px;border:1px solid #ef9a9a;">
-          <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:13px;">技術的制約の違い</div>
-          <div style="font-size:12.5px;color:#5a3a3a;">コミック制作にはエンジニアリング技術や安全倫理上の制約がないため、結論の技術的制約が強い産業への適用可能性はさらなる検証が必要。</div>
-        </div>
-        <div style="background:#fdecea;border-radius:8px;padding:14px;border:1px solid #ef9a9a;">
-          <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:13px;">チームメンバーの部分的交替</div>
-          <div style="font-size:12.5px;color:#5a3a3a;">データにおけるチームメンバーの交替パターンは全員交替か全員継続が主であり、全体的なチーム経験と二者間の経験効果を区別できない。</div>
-        </div>
-        <div style="background:#fdecea;border-radius:8px;padding:14px;border:1px solid #ef9a9a;">
-          <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:13px;">歴史的時期の効果</div>
-          <div style="font-size:12.5px;color:#5a3a3a;">コミックは文化的製品として他のクリエイターに学習・模倣されうる。共通の歴史がクリエイターの行動に影響する可能性があるが、24年間のスパンが一定の保証を提供。</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#e6f4ea">🔭</span>今後の研究方向</div>
-      <ul class="impl-list">
-        <li><span class="impl-num">→</span><span>成功と失敗の両方のイノベーションを同時に識別する研究デザインを設計し、平均効果と分散効果をより精密に区別する。</span></li>
-        <li><span class="impl-num">→</span><span>技術的制約の強い産業（医療、エンジニアリングなど）における知識組み合わせ理論の適用可能性を検証する。</span></li>
-        <li><span class="impl-num">→</span><span>チームメンバーの部分的交替がチーム学習効果に及ぼすメカニズムを研究する。</span></li>
-        <li><span class="impl-num">→</span><span>表面的な多様性指標ではなく、チームメンバーの具体的なキャリア経験の測定に焦点を当てる。</span></li>
-        <li><span class="impl-num">→</span><span>大規模組織がイノベーションを抑制する具体的メカニズムと、組織設計による緩和方法を探る。</span></li>
-      </ul>
-    </div>
-  </div>
-
+  <div class="footer">一橋大学｜前期ゼミナールI</div>
 </div>
 
-<script>
-  // ===== TAB SYSTEM =====
-  (function() {
-    'use strict';
-    if (!window.chartInstances) window.chartInstances = {};
-    var chartInitialized = {};
-
-    function initTab(tabId) {
-      try {
-        if (chartInitialized[tabId]) return;
-        chartInitialized[tabId] = true;
-        console.log('Initializing charts for tab:', tabId);
-        if (tabId === 'methods') initDescChart();
-        if (tabId === 'results') { initCoefChart(); initInteractChart(); }
-        if (tabId === 'implications') initCompareChart();
-      } catch(e) {
-        console.error('Chart init error for tab ' + tabId + ':', e);
-      }
-    }
-
-    function switchTab(targetId) {
-      try {
-        var tabs = document.querySelectorAll('.tab-btn');
-        var sections = document.querySelectorAll('.section');
-        if (!tabs || !sections) return;
-
-        tabs.forEach(function(btn) {
-          btn.classList.remove('active');
-          if (btn.getAttribute('data-tab') === targetId) btn.classList.add('active');
-        });
-
-        sections.forEach(function(sec) {
-          sec.classList.remove('active');
-          sec.style.display = 'none';
-        });
-
-        var target = document.getElementById('tab-' + targetId);
-        if (target) {
-          target.classList.add('active');
-          target.style.display = 'block';
-          console.log('Switched to tab:', targetId);
-          setTimeout(function() { initTab(targetId); }, 50);
-        }
-      } catch(e) {
-        console.error('Tab switch error:', e);
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      try {
-        var tabBtns = document.querySelectorAll('.tab-btn');
-        tabBtns.forEach(function(btn) {
-          btn.addEventListener('click', function() {
-            var tabId = this.getAttribute('data-tab');
-            if (tabId) switchTab(tabId);
-          });
-        });
-
-        // Show first section
-        var firstSection = document.getElementById('tab-overview');
-        if (firstSection) {
-          firstSection.style.display = 'block';
-          firstSection.classList.add('active');
-        }
-
-        // Hide others
-        var allSections = document.querySelectorAll('.section');
-        allSections.forEach(function(sec) {
-          if (sec.id !== 'tab-overview') sec.style.display = 'none';
-        });
-
-        console.log('Tab system initialized. Total tabs:', tabBtns.length);
-      } catch(e) {
-        console.error('DOMContentLoaded error:', e);
-      }
-    });
-  })();
-
-  // ===== COLLAPSIBLE =====
-  function toggleCollapsible(header) {
-    try {
-      var arrow = header.querySelector('.collapsible-arrow');
-      var body = header.nextElementSibling;
-      if (!body) return;
-      var isOpen = body.style.display !== 'none';
-      body.style.display = isOpen ? 'none' : 'block';
-      if (arrow) arrow.classList.toggle('open', !isOpen);
-    } catch(e) {
-      console.error('Collapsible error:', e);
-    }
-  }
-
-  // ===== CHARTS =====
-  var COLORS = {
-    primary: '#1a3a5c',
-    accent: '#e8392a',
-    accent2: '#f5a623',
-    green: '#2e7d32',
-    blue: '#1565c0',
-    muted: '#6b7a8d',
-    lightBlue: 'rgba(26,58,92,0.15)',
-    lightRed: 'rgba(232,57,42,0.15)',
-    lightGreen: 'rgba(46,125,50,0.15)'
-  };
-
-  function destroyChart(id) {
-    if (window.chartInstances[id]) {
-      window.chartInstances[id].destroy();
-      delete window.chartInstances[id];
-    }
-  }
-
-  function initDescChart() {
-    var canvas = document.getElementById('chart-desc');
-    if (!canvas) return;
-    destroyChart('desc');
-    var ctx = canvas.getContext('2d');
-    window.chartInstances['desc'] = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['クリエイター数(平均)', 'ジャンル経験(平均)', 'チーム経験(平均)', '作業負荷平均/10', '在職期間(平均)/10', '出版社規模(平均)'],
-        datasets: [{
-          label: '平均値',
-          data: [2.17, 2.56, 3.35, 1.473, 1.663, 0.74],
-          backgroundColor: [
-            COLORS.lightBlue, COLORS.lightRed, COLORS.lightGreen,
-            COLORS.lightBlue, COLORS.lightRed, COLORS.lightGreen
-          ],
-          borderColor: [
-            COLORS.primary, COLORS.accent, COLORS.green,
-            COLORS.primary, COLORS.accent, COLORS.green
-          ],
-          borderWidth: 2,
-          borderRadius: 5
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        aspectRatio: 2,
-        plugins: {
-          legend: { display: false },
-          title: {
-            display: true,
-            text: '主要変数の記述統計（平均値）',
-            color: COLORS.primary,
-            font: { size: 13, weight: 'bold' }
-          },
-          tooltip: {
-            callbacks: {
-              label: function(ctx) {
-                var labels = ['人', 'ジャンル', '回', '作品/年(x10)', '年(x10)', ''];
-                return ctx.parsed.y.toFixed(2) + (labels[ctx.dataIndex] || '');
-              }
-            }
-          }
-        },
-        scales: {
-          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-          x: { grid: { display: false }, ticks: { font: { size: 11 } } }
-        }
-      }
-    });
-  }
-
-  function initCoefChart() {
-    var canvas = document.getElementById('chart-coef');
-    if (!canvas) return;
-    destroyChart('coef');
-    var ctx = canvas.getContext('2d');
-    var labels = ['クリエイター数', 'ジャンル経験', 'チーム経験', '作業負荷増加', '出版社規模', '最高過去価値', '発行部数'];
-    var values = [0.04, 0.027, 0.011, -0.14, -0.07, 0.02, 4.62];
-    var bgColors = values.map(function(v) { return v >= 0 ? 'rgba(46,125,50,0.7)' : 'rgba(232,57,42,0.7)'; });
-    var borderColors = values.map(function(v) { return v >= 0 ? COLORS.green : COLORS.accent; });
-    window.chartInstances['coef'] = new Chart(ctx, {
-      type: 'bar',
-      indexAxis: 'y',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: '回帰係数',
-          data: values,
-          backgroundColor: bgColors,
-          borderColor: borderColors,
-          borderWidth: 2,
-          borderRadius: 4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        aspectRatio: 1.6,
-        plugins: {
-          legend: { display: false },
-          title: {
-            display: true,
-            text: 'パフォーマンス偏差の回帰係数（モデル2）',
-            color: COLORS.primary,
-            font: { size: 13, weight: 'bold' }
-          }
-        },
-        scales: {
-          x: {
-            grid: { color: 'rgba(0,0,0,0.05)' },
-            ticks: { font: { size: 11 } }
-          },
-          y: {
-            grid: { display: false },
-            ticks: { font: { size: 11 } }
-          }
-        }
-      }
-    });
-  }
-
-  function initInteractChart() {
-    var canvas = document.getElementById('chart-interact');
-    if (!canvas) return;
-    destroyChart('interact');
-    var ctx = canvas.getContext('2d');
-    var genres = [0, 1, 2, 3, 4, 5, 6];
-    var teamData = genres.map(function(g) { return 0 + 0.016 * g; });
-    var indivData = genres.map(function(g) { return -0.16 + (0.016 + 0.053) * g; });
-    window.chartInstances['interact'] = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: genres.map(function(g) { return g + 'ジャンル'; }),
-        datasets: [
-          {
-            label: 'チーム制作',
-            data: teamData,
-            borderColor: COLORS.primary,
-            backgroundColor: 'rgba(26,58,92,0.1)',
-            borderWidth: 2.5,
-            pointRadius: 4,
-            tension: 0.3,
-            fill: false
-          },
-          {
-            label: '個人クリエイター',
-            data: indivData,
-            borderColor: COLORS.accent,
-            backgroundColor: 'rgba(232,57,42,0.1)',
-            borderWidth: 2.5,
-            pointRadius: 4,
-            tension: 0.3,
-            borderDash: [6, 3],
-            fill: false
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        aspectRatio: 2,
-        plugins: {
-          legend: { position: 'top', labels: { font: { size: 12 } } },
-          title: {
-            display: true,
-            text: 'ジャンル経験がパフォーマンス偏差に与える交互作用効果',
-            color: COLORS.primary,
-            font: { size: 13, weight: 'bold' }
-          }
-        },
-        scales: {
-          y: {
-            grid: { color: 'rgba(0,0,0,0.05)' },
-            title: { display: true, text: 'パフォーマンス偏差（相対値）', font: { size: 11 } }
-          },
-          x: {
-            grid: { display: false },
-            title: { display: true, text: 'ジャンル経験数', font: { size: 11 } }
-          }
-        }
-      }
-    });
-  }
-
-  function initCompareChart() {
-    var canvas = document.getElementById('chart-compare');
-    if (!canvas) return;
-    destroyChart('compare');
-    var ctx = canvas.getContext('2d');
-    window.chartInstances['compare'] = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['ジャンル経験', 'チーム経験', 'クリエイター数', '作業負荷', '在職期間', '出版社規模'],
-        datasets: [
-          {
-            label: '探索効果（分散↑）',
-            data: [1, 1, 0.5, -1, 0, -0.5],
-            backgroundColor: 'rgba(245,166,35,0.75)',
-            borderColor: COLORS.accent2,
-            borderWidth: 2,
-            borderRadius: 4
-          },
-          {
-            label: '活用効果（平均↑）',
-            data: [1, 1, 0, -0.5, 0, -1],
-            backgroundColor: 'rgba(26,58,92,0.65)',
-            borderColor: COLORS.primary,
-            borderWidth: 2,
-            borderRadius: 4
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        aspectRatio: 1.8,
-        plugins: {
-          legend: { position: 'top', labels: { font: { size: 12 } } },
-          title: {
-            display: true,
-            text: '各要因が探索と活用に与える影響の方向（相対的な強さ）',
-            color: COLORS.primary,
-            font: { size: 13, weight: 'bold' }
-          }
-        },
-        scales: {
-          y: {
-            grid: { color: 'rgba(0,0,0,0.05)' },
-            title: { display: true, text: '効果の方向と強さ', font: { size: 11 } },
-            ticks: {
-              callback: function(v) {
-                if (v === 1) return '強い正';
-                if (v === 0.5) return '弱い正';
-                if (v === 0) return '効果なし';
-                if (v === -0.5) return '弱い負';
-                if (v === -1) return '強い負';
-                return '';
-              }
-            }
-          },
-          x: { grid: { display: false }, ticks: { font: { size: 11 } } }
-        }
-      }
-    });
-  }
-
-  // ===== RESIZE HANDLER =====
-  window.addEventListener('resize', function() {
-    try {
-      Object.keys(window.chartInstances).forEach(function(key) {
-        if (window.chartInstances[key] && typeof window.chartInstances[key].resize === 'function') {
-          window.chartInstances[key].resize();
-        }
-      });
-    } catch(e) {
-      console.error('Resize error:', e);
-    }
-  });
-
-  window.onload = function() {
-    console.log('Page fully loaded.');
-  };
-</script>
 </body>
 </html>
