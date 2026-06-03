@@ -1,0 +1,930 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>イノベーションの非普及：専門職の媒介的役割 - インタラクティブ読解</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        .report-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+            background: #ffffff;
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.08);
+        }
+        /* Sticky Tab Navigation */
+        .tab-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            border-radius: 0 0 12px 12px;
+            padding: 0 8px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            display: flex;
+            align-items: stretch;
+        }
+        .tab-nav::-webkit-scrollbar { height: 4px; }
+        .tab-nav::-webkit-scrollbar-thumb { background: #4a6cf7; border-radius: 4px; }
+        .tab-nav::-webkit-scrollbar-track { background: transparent; }
+        .tab-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 14px 18px;
+            background: transparent;
+            border: none;
+            color: #8899aa;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            white-space: nowrap;
+            outline: none;
+            font-family: inherit;
+            min-height: 52px;
+        }
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 60%;
+            height: 3px;
+            background: #4a6cf7;
+            border-radius: 3px 3px 0 0;
+            transition: transform 0.3s ease;
+        }
+        .tab-btn:hover { color: #c0d0e0; background: rgba(255,255,255,0.05); }
+        .tab-btn.active { color: #ffffff; }
+        .tab-btn.active::after { transform: translateX(-50%) scaleX(1); }
+        .tab-icon { margin-right: 6px; font-size: 1.1rem; }
+        /* Sections */
+        .tab-section {
+            display: none;
+            padding: 30px 16px;
+            animation: fadeIn 0.4s ease;
+        }
+        .tab-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Headings */
+        h1 {
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 800;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        h2 {
+            font-size: clamp(1.2rem, 3vw, 1.7rem);
+            font-weight: 700;
+            color: #16213e;
+            margin: 28px 0 14px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid #4a6cf7;
+            display: inline-block;
+        }
+        h3 {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 20px 0 10px;
+        }
+        .subtitle {
+            font-size: 0.95rem;
+            color: #5a6a7a;
+            margin-bottom: 20px;
+        }
+        .meta-info {
+            font-size: 0.85rem;
+            color: #6c757d;
+            background: #f8f9fa;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 10px 0 20px;
+            border-left: 4px solid #4a6cf7;
+        }
+        .meta-info a {
+            color: #4a6cf7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .meta-info a:hover { text-decoration: underline; }
+        /* Cards and Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #eef0f8 100%);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #e8eaf0;
+        }
+        .stat-card.accent { border-left: 4px solid #4a6cf7; }
+        .stat-card.success { border-left: 4px solid #2ecc71; }
+        .stat-card.warning { border-left: 4px solid #f39c12; }
+        .stat-card.danger { border-left: 4px solid #e74c3c; }
+        .stat-number {
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            font-weight: 800;
+            color: #1a1a2e;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: #5a6a7a;
+            margin-top: 4px;
+        }
+        /* Collapsible */
+        .collapsible {
+            margin: 16px 0;
+            border: 1px solid #e0e4ec;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fafbfc;
+        }
+        .collapsible-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1a1a2e;
+            background: #f8f9fc;
+            transition: background 0.2s;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+        .collapsible-header:hover { background: #edf0f8; }
+        .collapsible-header .arrow {
+            transition: transform 0.3s ease;
+            font-size: 1rem;
+            color: #4a6cf7;
+        }
+        .collapsible-header .arrow.open { transform: rotate(180deg); }
+        .collapsible-body {
+            padding: 0 18px 18px;
+            line-height: 1.7;
+        }
+        .collapsible-body.hidden { display: none; }
+        /* Table */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: 10px;
+            border: 1px solid #e0e4ec;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 600px;
+        }
+        th {
+            background: #1a1a2e;
+            color: white;
+            padding: 12px 10px;
+            font-weight: 600;
+            text-align: left;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e8eaf0;
+            vertical-align: top;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f5f7fc; }
+        /* Chart container */
+        .chart-box {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 20px 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border: 1px solid #e8eaf0;
+            max-height: 500px;
+        }
+        .chart-box canvas { max-height: 420px; max-width: 100%; }
+        /* Quote */
+        blockquote {
+            background: #f8f9fc;
+            border-left: 4px solid #4a6cf7;
+            padding: 14px 20px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: #34495e;
+            font-size: 0.95rem;
+        }
+        blockquote cite {
+            display: block;
+            margin-top: 6px;
+            font-style: normal;
+            font-size: 0.85rem;
+            color: #5a6a7a;
+        }
+        /* Image */
+        .img-container {
+            margin: 20px 0;
+            text-align: center;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            background: #f8f9fc;
+            padding: 12px;
+        }
+        .img-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .img-caption {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 6px;
+        }
+        /* Highlight box */
+        .highlight-box {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 20px 0;
+            border-left: 5px solid #4a6cf7;
+        }
+        .highlight-box h4 { color: #1a1a2e; margin-bottom: 8px; font-size: 1rem; }
+        .highlight-box ul { padding-left: 20px; margin-top: 6px; }
+        .highlight-box li { margin-bottom: 6px; font-size: 0.9rem; }
+        .tag {
+            display: inline-block;
+            background: #4a6cf7;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 4px;
+        }
+        .tag.green { background: #2ecc71; }
+        .tag.orange { background: #f39c12; }
+        .tag.red { background: #e74c3c; }
+        .tag.blue { background: #3498db; }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .report-container { padding: 0 12px 30px; }
+            .tab-section { padding: 20px 8px; }
+            .tab-btn { padding: 12px 14px; font-size: 0.78rem; }
+            .grid-2 { grid-template-columns: 1fr; gap: 14px; }
+            .grid-3 { grid-template-columns: 1fr 1fr; gap: 12px; }
+            h1 { font-size: 1.4rem; }
+            .stat-number { font-size: 1.5rem; }
+        }
+        @media (max-width: 480px) {
+            .tab-btn { padding: 10px 10px; font-size: 0.72rem; min-height: 44px; }
+            .tab-icon { display: none; }
+            .grid-3 { grid-template-columns: 1fr; }
+            blockquote { font-size: 0.85rem; padding: 10px 14px; }
+        }
+        .note-sm { font-size: 0.8rem; color: #6c757d; margin-top: 4px; }
+        .pill-group { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+        .math { overflow-x: auto; padding: 4px 0; }
+    </style>
+</head>
+<body>
+<div class="report-container" id="report-root">
+
+    <!-- Sticky Tabs -->
+    <nav class="tab-nav" role="tablist" aria-label="レポートセクション">
+        <button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">
+            <span class="tab-icon">📊</span> 概要
+        </button>
+        <button class="tab-btn" data-tab="methods" role="tab">
+            <span class="tab-icon">🔬</span> 研究方法
+        </button>
+        <button class="tab-btn" data-tab="findings" role="tab">
+            <span class="tab-icon">📈</span> 主要発見
+        </button>
+        <button class="tab-btn" data-tab="cases" role="tab">
+            <span class="tab-icon">🏥</span> 事例分析
+        </button>
+        <button class="tab-btn" data-tab="theory" role="tab">
+            <span class="tab-icon">🧠</span> 理論的貢献
+        </button>
+    </nav>
+
+    <!-- ========= Section 1: 概要 ========= -->
+    <section id="section-overview" class="tab-section active">
+        <h1>イノベーションの非普及</h1>
+        <p class="subtitle">専門職の媒介的役割：多職種組織における質的研究</p>
+        <div class="meta-info">
+            <strong>著者：</strong> Ferlie, Fitzgerald, Wood &amp; Hawkins |
+            <strong>出典：</strong> Academy of Management Journal (2005) |
+            <strong>研究期間：</strong> 1996–1999 | <strong>総インタビュー数：</strong> 232回 |
+            <a href="https://doi.org/10.5465/amj.2005.15993150" target="_blank" rel="noopener">📄 原文を読む (DOI) ↗</a>
+        </div>
+
+        <div class="highlight-box">
+            <h4>中心的命題</h4>
+            <p>なぜイノベーションは強力なエビデンスがあっても普及しないのか？本研究は<b>「多職種化による阻害効果」</b>という理論を提唱する：異なる専門職集団の間に存在する強い社会的・認知的境界が、多職種組織におけるイノベーションの普及を阻害する。この発見は、従来の「高度な専門化がイノベーション普及を促進する」という仮説に対する挑戦である。</p>
+        </div>
+
+        <div class="grid-3">
+            <div class="stat-card accent">
+                <div class="stat-number">8</div>
+                <div class="stat-label">比較事例研究</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-number">232</div>
+                <div class="stat-label">深層インタビュー</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-number">119</div>
+                <div class="stat-label">急性期医療インタビュー</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="stat-card">
+                <div class="stat-number">113</div>
+                <div class="stat-label">プライマリケアインタビュー</div>
+            </div>
+            <div class="stat-card danger">
+                <div class="stat-number">1/8</div>
+                <div class="stat-label">広範に普及したのは1件のみ</div>
+            </div>
+        </div>
+
+        <div class="collapsible">
+            <button class="collapsible-header">
+                <span>📌 研究背景と課題</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="collapsible-body">
+                <p>エビデンスに基づく医療（EBM）運動が推進される中（英米およびカナダの医療制度）、政策立案者は次の問いの解明を試みてきた：<b>なぜエビデンスに基づくイノベーションは医療組織において普及しないのか？</b>従来の線形的普及モデル（Rogers, 1995）は、非線形で混沌とした経路モデル（Van de Venら, 1999）によって見直されつつある。本研究は2つの大規模質的研究に基づき、高度に専門化された多職種が共存する医療組織において、イノベーションが実際にたどる軌跡を探索するものである。</p>
+            </div>
+        </div>
+
+        <!-- 図表 -->
+        <div class="chart-box">
+            <h3 style="margin:0 0 12px; border:none; font-size:1rem;">イノベーション普及の結果分布</h3>
+            <canvas id="chart-outcome"></canvas>
+        </div>
+    </section>
+
+    <!-- ========= Section 2: 研究方法 ========= -->
+    <section id="section-methods" class="tab-section">
+        <h2>研究方法論</h2>
+
+        <div class="grid-2">
+            <div class="stat-card accent">
+                <h4>研究デザイン</h4>
+                <ul style="padding-left:16px; margin-top:8px;">
+                    <li>比較縦断的事例研究（8事例）</li>
+                    <li>理論的サンプリング（2×2マトリクス設計）</li>
+                    <li>2段階：マクロ地域評価 ＋ ミクロ現場分析</li>
+                </ul>
+            </div>
+            <div class="stat-card success">
+                <h4>データ収集</h4>
+                <ul style="padding-left:16px; margin-top:8px;">
+                    <li>半構造化インタビュー（232回）</li>
+                    <li>二次資料：議事録、ガイドライン、報告書</li>
+                    <li>非公式の観察</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="collapsible">
+            <button class="collapsible-header">
+                <span>🔍 事例選定フレームワーク</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="collapsible-body">
+                <p><b>2×2理論的サンプリングマトリクス</b>を採用し、<b>科学的エビデンスの強度</b>と<b>イノベーションの複雑さ</b>を軸とした：</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>次元</th><th>強い科学的エビデンス</th><th>弱い科学的エビデンス</th></tr></thead>
+                        <tbody>
+                            <tr><td><b>単一ステークホルダー</b></td><td>AC: LMWH術後抗凝固療法<br>PC: アスピリンによる心臓イベント予防</td><td>AC: 腹腔鏡ヘルニア修復<br>PC: HRTによる骨粗鬆症予防</td></tr>
+                            <tr><td><b>多ステークホルダー</b></td><td>AC: コンピュータ支援抗凝固サービス<br>PC: 糖尿病管理（セントビンセント宣言）</td><td>AC: 周産期リスク管理<br>PC: プライマリケアにおける理学療法士直接雇用</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="note-sm">AC＝急性期医療、PC＝プライマリケア</p>
+            </div>
+        </div>
+
+        <div class="collapsible">
+            <button class="collapsible-header">
+                <span>📋 インタビュー分布</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="collapsible-body">
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>イノベーション項目</th><th>マクロ事例</th><th>ミクロ事例</th><th>合計</th></tr></thead>
+                        <tbody>
+                            <tr><td>AC: LMWH術後抗凝固</td><td>17</td><td>10</td><td>27</td></tr>
+                            <tr><td>AC: 腹腔鏡ヘルニア修復</td><td>17</td><td>11</td><td>28</td></tr>
+                            <tr><td>AC: コンピュータ抗凝固サービス</td><td>19</td><td>9</td><td>28</td></tr>
+                            <tr><td>AC: 周産期リスク管理</td><td>18</td><td>18</td><td>36</td></tr>
+                            <tr><td>PC: アスピリン予防</td><td>16</td><td>12</td><td>28</td></tr>
+                            <tr><td>PC: HRT予防</td><td>17</td><td>13</td><td>30</td></tr>
+                            <tr><td>PC: 糖尿病管理</td><td>20</td><td>4</td><td>24</td></tr>
+                            <tr><td>PC: プライマリケア理学療法士</td><td>20</td><td>11</td><td>31</td></tr>
+                            <tr><td><b>合計</b></td><td><b>144</b></td><td><b>88</b></td><td><b>232</b></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========= Section 3: 主要発見 ========= -->
+    <section id="section-findings" class="tab-section">
+        <h2>主要な発見</h2>
+
+        <div class="highlight-box">
+            <h4>主要な結論</h4>
+            <ul>
+                <li><b>非線形の経路：</b>イノベーション普及の経路は線形的な流れではなく、不規則で循環的、時に逆転するプロセスである</li>
+                <li><b>エビデンスの限界：</b>強い科学的エビデンスだけでは普及の成功は保証されない――「科学的推進力（science push）」には限界がある</li>
+                <li><b>境界の効果：</b>社会的・認知的境界こそが、イノベーション普及を阻害する中核的メカニズムである</li>
+                <li><b>専門職の実践コミュニティ：</b>多くの専門職の実践コミュニティは単一分野で閉じており、境界を越えた学習を妨げている</li>
+            </ul>
+        </div>
+
+        <div class="grid-2">
+            <div class="stat-card warning">
+                <h4>普及結果の評価基準</h4>
+                <p style="font-size:0.9rem; margin-top:6px;">3つの指標：地理的拡散、早期採用者を超えた浸透、組織的・職種的境界の越境</p>
+            </div>
+            <div class="stat-card danger">
+                <h4>広範に普及したのは1件のみ</h4>
+                <p style="font-size:0.9rem; margin-top:6px;"><b>PC: アスピリン予防</b> — システム全体に広く普及した唯一の事例</p>
+            </div>
+        </div>
+
+        <div class="chart-box">
+            <h3 style="margin:0 0 12px; border:none; font-size:1rem;">イノベーション普及の比較：2つの対照的な事例</h3>
+            <canvas id="chart-polar"></canvas>
+        </div>
+
+        <div class="grid-2">
+            <div class="stat-card success">
+                <h4>✅ 成功事例（ポジティブ・デビアント）：アスピリン予防</h4>
+                <ul style="padding-left:16px; margin-top:8px; font-size:0.9rem;">
+                    <li>極めて強いエビデンス基盤 ＋ 国家政策による後押し</li>
+                    <li>多職種間の協働に成功（医師＋看護師）</li>
+                    <li>プライマリケアの価値観を共有</li>
+                    <li>看護師主導のクリニックを設立し、役割の再定義に成功</li>
+                </ul>
+            </div>
+            <div class="stat-card danger">
+                <h4>❌ 失敗事例（ネガティブ・デビアント）：コンピュータ抗凝固サービス</h4>
+                <ul style="padding-left:16px; margin-top:8px; font-size:0.9rem;">
+                    <li>同様に強いエビデンスがあるにもかかわらず普及に失敗</li>
+                    <li>病院→プライマリケアの組織的・職種的境界の越境が必要</li>
+                    <li>看護師の役割拡大が阻まれ、孤立した状態に</li>
+                    <li>病院医師が新技術の安全性に疑問を呈した</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="collapsible">
+            <button class="collapsible-header">
+                <span>💬 重要な引用</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="collapsible-body">
+                <blockquote>
+                    「一般診療におけるイノベーションに関するエビデンスはすべて、人々の行動を変えられる単一の方法などほとんど存在しない、ということを示しているように思います。」
+                    <cite>— 本研究のインタビュー対象GP（一般開業医）</cite>
+                </blockquote>
+                <blockquote>
+                    「私たちはチームワークをとても大事にしています……メンバーがそれぞれのスキルや関心を伸ばすことを積極的に奨励しており、その点では他の職場よりも進んでいると思います。」
+                    <cite>— イノベーション採用に成功した拠点の医師</cite>
+                </blockquote>
+                <blockquote>
+                    「リソースの追加なしに仕事だけプライマリケアに回されること――これは私たちにとって非常にナーバスな問題です。」
+                    <cite>— プライマリケア医（抗凝固サービスの移管について）</cite>
+                </blockquote>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========= Section 4: 事例分析 ========= -->
+    <section id="section-cases" class="tab-section">
+        <h2>事例の深層分析</h2>
+
+        <div class="collapsible">
+            <button class="collapsible-header">
+                <span>🏥 AC: LMWH術後抗凝固 — 専門職内部の対立</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="collapsible-body">
+                <p>低分子ヘパリンによる整形外科術後の血栓予防には強いRCTエビデンスがある。しかし<b>整形外科医</b>と<b>血管外科医</b>の間には認知的な溝が存在する：血管外科は血栓リスクに着目する一方、整形外科は出血や感染の合併症をより強く懸念する。知識は隣接する外科サブスペシャリティの間ですら流通しない。「整形外科は事情が違う」が抵抗の合言葉となった。</p>
+                <p><span class="tag orange">専門職内部の境界</span> <span class="tag">認知フレームの衝突</span></p>
+            </div>
+        </div>
+
+        <div class="collapsible">
+            <button class="collapsible-header">
+                <span>🏥 AC: 腹腔鏡ヘルニア修復 — 過剰採用後の逆転</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="collapsible-body">
+                <p>エビデンスがまだ不十分な段階で過剰に採用され、その後に合併症や効果への疑問が浮上し、「脱採用（de-adoption）」の動きが見られた。本研究において唯一、境界理論だけでは説明しきれない異常事例である――単一の専門職グループのみが関与し、重要な境界が存在しないにもかかわらず、普及が進まなかった。</p>
+                <p><span class="tag red">エビデンスに先行した採用</span> <span class="tag">周期的逆転</span></p>
+            </div>
+        </div>
+
+        <div class="collapsible">
+            <button class="collapsible-header">
+                <span>🏥 AC: 周産期リスク管理 — 職種間の深層的な対立</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="collapsible-body">
+                <p><i>Changing Childbirth</i>政策が産科サービス改革を後押しし、<b>産科医</b>と<b>助産師</b>の間に激しい論争を引き起こした――出産は医療化されるべきか？リスクを定義するのは誰か？助産師はRCTでは不十分であり、妊産婦の体験が無視されていると主張した。ミクロレベルでの成功事例は、長期にわたる信頼関係と「研究助産師（research midwife）」という橋渡し役の存在に支えられていた。</p>
+                <p><span class="tag blue">専門職間の境界</span> <span class="tag orange">研究パラダイムの衝突</span></p>
+            </div>
+        </div>
+
+        <div class="collapsible">
+            <button class="collapsible-header">
+                <span>🏥 PC: プライマリケアにおける糖尿病管理 — 多専門職チームの幻想</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="collapsible-body">
+                <p>セントビンセント宣言は多職種チームによる糖尿病管理を提唱した。しかし「多職種チーム」というレトリックの裏には、根深い認知的な対立が隠れている：プライマリケア医と病院のコンサルタント医師の間で、エビデンスの解釈に大きな隔たりがある。プライマリケア医は、エビデンスの多くが二次医療に基づいたものであり、一般診療にはそのまま適用できないと主張した。</p>
+                <p><span class="tag blue">病院 vs プライマリケア</span> <span class="tag">エビデンスの適用可能性をめぐる対立</span></p>
+            </div>
+        </div>
+
+        <div class="collapsible">
+            <button class="collapsible-header">
+                <span>🏥 PC: HRTによる骨粗鬆症予防 — 受動的な共存</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="collapsible-body">
+                <p>ホルモン補充療法（HRT）による骨粗鬆症予防には科学的な論争がある（乳がんリスク増加の可能性）。各専門職の間は「受動的な共存」の状態にあり、互いに積極的に異議を唱えることはないが合意もなく、普及は限定的な範囲にとどまっている。</p>
+                <p><span class="tag orange">エビデンスをめぐる論争</span> <span class="tag">受動的共存</span></p>
+            </div>
+        </div>
+
+        <div class="collapsible">
+            <button class="collapsible-header">
+                <span>🏥 PC: プライマリケアにおける理学療法士の直接雇用 — 革新的だが強いエビデンスなし</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="collapsible-body">
+                <p>強いRCTエビデンスはないものの、プライマリケア医は理学療法サービスをサービスの質の向上として評価している。医師と理学療法士の間で新たな業務上の取り決めが必要となる。理学療法士は医学界のエビデンス観に積極的に異議を唱えることはなく、普及は一部のイノベーターにとどまった。</p>
+                <p><span class="tag green">サービスイノベーション</span> <span class="tag">弱いエビデンス</span></p>
+            </div>
+        </div>
+
+        <!-- 画像 -->
+        <div class="img-container">
+            <img src="https://pub-cdn.sider.ai/u/U0R7HR91ZX5/file/2f31bdac-719c-4f88-b0ba-759e00ad4358/6c69406749175a5d21fc6116df7b2920222a6ec04e1c0b25aacf223ff02e311c.jpg" alt="研究フレームワーク図">
+            <div class="img-caption">研究フレームワーク：専門職境界、実践コミュニティ、イノベーション伝播の関係</div>
+        </div>
+    </section>
+
+    <!-- ========= Section 5: 理論的貢献 ========= -->
+    <section id="section-theory" class="tab-section">
+        <h2>理論的貢献と示唆</h2>
+
+        <div class="highlight-box">
+            <h4>新たな理論：多職種化とイノベーションの非普及</h4>
+            <p>本研究は主流の理論とは逆の見解を示す：<b>高度な専門化</b>は、複雑な多職種組織においてイノベーションの普及を促進するどころか、以下のメカニズムを通じてむしろ阻害する：</p>
+            <ul>
+                <li><b>強い社会的境界：</b>単一職種の実践コミュニティが閉鎖的に機能し、外部からの影響を受け入れない</li>
+                <li><b>認知的・知識的境界：</b>異なる専門職がそれぞれ独自の研究文化や認知フレームを形成し、相互に理解が及ばない</li>
+                <li><b>境界の相互強化：</b>社会的アイデンティティと認知的差異が互いに絡み合い、越えがたい「二重の壁」を築く</li>
+            </ul>
+        </div>
+
+        <div class="grid-2">
+            <div class="stat-card accent">
+                <h4>実践コミュニティ理論の発展</h4>
+                <p style="font-size:0.9rem;">専門職の実践コミュニティは、Wenger（1998）が論じた技術労働者のコミュニティと比べてはるかに閉鎖的かつ制度化されている。内部の学習は促進するが、外部に対しては極めて自己完結的である。</p>
+            </div>
+            <div class="stat-card warning">
+                <h4>知識マネジメントへの示唆</h4>
+                <p style="font-size:0.9rem;">知識の「粘着性（stickiness）」は知識そのものの属性だけでなく、社会的・認知的境界にも起因する。多職種組織ではこうした境界を能動的にマネジメントしていく必要がある。</p>
+            </div>
+        </div>
+
+        <div class="collapsible">
+            <button class="collapsible-header">
+                <span>🔗 医療分野を超えた一般化</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="collapsible-body">
+                <p>本研究の知見は医療分野にとどまらず、大手コンサルティング会社、製薬企業、ソフトウェア企業といった<b>知識集約型の多職種組織</b>にも当てはまる。効果的な知識マネジメント戦略を構築するには、異なる実践コミュニティ間の社会的・認知的境界を見極め、それらを橋渡しする仕組みが不可欠である。</p>
+            </div>
+        </div>
+
+        <div class="collapsible">
+            <button class="collapsible-header">
+                <span>⚠️ 研究の限界と今後の方向性</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="collapsible-body">
+                <ul>
+                    <li>唯一の異常事例（腹腔鏡ヘルニア）は境界理論だけでは十分に説明できない</li>
+                    <li>権力格差の影響が掘り下げられていない（強い立場にある専門職がイノベーションを押し通せるのか）</li>
+                    <li>今後の研究課題：境界オブジェクト（共同プロトコルなど）はどのようにして職種間の境界を橋渡しできるか？</li>
+                    <li>真に多職種的な実践コミュニティをどう構築するか？</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="chart-box">
+            <h3 style="margin:0 0 12px; border:none; font-size:1rem;">専門職間境界がイノベーションに与える影響メカニズム</h3>
+            <canvas id="chart-boundary"></canvas>
+        </div>
+    </section>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    if (!window.chartInstances) window.chartInstances = {};
+    var chartInitialized = {};
+
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('[レポート] DOM読み込み完了、初期化開始...');
+        initTabs();
+        initCollapsibles();
+        initChartsForActiveTab();
+        window.addEventListener('resize', handleResize);
+    });
+
+    // ---- タブシステム ----
+    function initTabs() {
+        var buttons = document.querySelectorAll('.tab-btn');
+        if (!buttons.length) {
+            console.warn('[Tab] タブボタンが見つかりません');
+            return;
+        }
+        buttons.forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                try {
+                    var tabName = this.getAttribute('data-tab');
+                    if (!tabName) return;
+                    console.log('[Tab] 切替:', tabName);
+                    document.querySelectorAll('.tab-btn').forEach(function(b) {
+                        b.classList.remove('active');
+                        b.setAttribute('aria-selected', 'false');
+                    });
+                    document.querySelectorAll('.tab-section').forEach(function(s) {
+                        s.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    this.setAttribute('aria-selected', 'true');
+                    var targetSection = document.getElementById('section-' + tabName);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+                    setTimeout(function() {
+                        initChartsForTab(tabName);
+                    }, 100);
+                } catch (err) {
+                    console.error('[Tab] エラー:', err);
+                }
+            });
+        });
+        console.log('[Tab] 初期化完了、タブ数:', buttons.length);
+    }
+
+    // ---- 折りたたみパネル ----
+    function initCollapsibles() {
+        var headers = document.querySelectorAll('.collapsible-header');
+        if (!headers.length) return;
+        headers.forEach(function(header) {
+            var body = header.nextElementSibling;
+            if (body && body.classList.contains('collapsible-body')) {
+                body.classList.remove('hidden');
+                var arrow = header.querySelector('.arrow');
+                if (arrow) arrow.classList.add('open');
+            }
+            header.addEventListener('click', function(e) {
+                try {
+                    var targetBody = this.nextElementSibling;
+                    if (!targetBody || !targetBody.classList.contains('collapsible-body')) return;
+                    var isHidden = targetBody.classList.contains('hidden');
+                    if (isHidden) {
+                        targetBody.classList.remove('hidden');
+                        var arr = this.querySelector('.arrow');
+                        if (arr) arr.classList.add('open');
+                    } else {
+                        targetBody.classList.add('hidden');
+                        var arr2 = this.querySelector('.arrow');
+                        if (arr2) arr2.classList.remove('open');
+                    }
+                } catch (err) {
+                    console.error('[Collapse] エラー:', err);
+                }
+            });
+        });
+    }
+
+    // ---- チャート初期化 ----
+    function initChartsForActiveTab() {
+        var activeBtn = document.querySelector('.tab-btn.active');
+        if (activeBtn) {
+            var tabName = activeBtn.getAttribute('data-tab');
+            if (tabName) initChartsForTab(tabName);
+        }
+    }
+
+    function initChartsForTab(tabName) {
+        if (!tabName) return;
+        if (chartInitialized[tabName]) return;
+        try {
+            if (tabName === 'overview') drawOutcomeChart();
+            if (tabName === 'findings') drawPolarChart();
+            if (tabName === 'theory') drawBoundaryChart();
+            chartInitialized[tabName] = true;
+        } catch (err) {
+            console.error('[チャート]', tabName, '初期化エラー:', err);
+        }
+    }
+
+    function handleResize() {
+        try {
+            ['chart-outcome', 'chart-polar', 'chart-boundary'].forEach(function(id) {
+                if (window.chartInstances[id] && typeof window.chartInstances[id].resize === 'function') {
+                    window.chartInstances[id].resize();
+                }
+            });
+        } catch (err) {}
+    }
+
+    // ---- チャート1: 普及結果の分布 ----
+    function drawOutcomeChart() {
+        var ctx = document.getElementById('chart-outcome');
+        if (!ctx) return;
+        if (window.chartInstances['chart-outcome']) window.chartInstances['chart-outcome'].destroy();
+        window.chartInstances['chart-outcome'] = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['広範に普及', '顕著だが論争あり', '論争あり・部分的普及', '小範囲', 'パイロット段階'],
+                datasets: [{
+                    label: 'イノベーション数',
+                    data: [1, 1, 3, 2, 1],
+                    backgroundColor: ['#2ecc71', '#3498db', '#f39c12', '#e67e22', '#e74c3c'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                aspectRatio: 2,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + ' 件';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 4, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+    }
+
+    // ---- チャート2: レーダー比較 ----
+    function drawPolarChart() {
+        var ctx = document.getElementById('chart-polar');
+        if (!ctx) return;
+        if (window.chartInstances['chart-polar']) window.chartInstances['chart-polar'].destroy();
+        window.chartInstances['chart-polar'] = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['エビデンスの強さ', '社会的境界の越境', '認知的一致性', '役割の再定義', '政策的支援', '組織間協力'],
+                datasets: [
+                    {
+                        label: 'PC: アスピリン（成功）',
+                        data: [5, 4, 5, 4, 5, 3],
+                        backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                        borderColor: '#2ecc71',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#2ecc71'
+                    },
+                    {
+                        label: 'AC: 抗凝固サービス（失敗）',
+                        data: [5, 1, 2, 2, 3, 1],
+                        backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                        borderColor: '#e74c3c',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#e74c3c'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                aspectRatio: 1.3,
+                scales: {
+                    r: { beginAtZero: true, max: 5, ticks: { stepSize: 1 } }
+                },
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 12 } } }
+                }
+            }
+        });
+    }
+
+    // ---- チャート3: 境界効果 ----
+    function drawBoundaryChart() {
+        var ctx = document.getElementById('chart-boundary');
+        if (!ctx) return;
+        if (window.chartInstances['chart-boundary']) window.chartInstances['chart-boundary'].destroy();
+        window.chartInstances['chart-boundary'] = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    '社会的境界\n(専門職アイデンティティ/役割)',
+                    '認知的境界\n(研究パラダイム/エビデンス観)',
+                    '組織的境界\n(病院 vs プライマリケア)',
+                    '技術-人文境界\n(人 vs システム)'
+                ],
+                datasets: [{
+                    label: '阻害の強さ (1-5)',
+                    data: [4.5, 4.2, 3.8, 3.0],
+                    backgroundColor: ['#e74c3c', '#f39c12', '#3498db', '#9b59b6'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: true,
+                aspectRatio: 1.5,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '阻害の強さ: ' + context.parsed.x + '/5';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 5,
+                        title: { display: true, text: '阻害の程度' }
+                    }
+                }
+            }
+        });
+    }
+
+    window.addEventListener('load', function() {
+        try { handleResize(); } catch (e) {}
+    });
+})();
+</script>
+</body>
+</html>
