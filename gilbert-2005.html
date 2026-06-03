@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>慣性の構造を解きほぐす：資源硬直性とルーティン硬直性</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #1a3a5c;
+    --accent: #2e7dbe;
+    --accent2: #e8a020;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --text: #1e2a38;
+    --muted: #5a6a7a;
+    --border: #d0dae6;
+    --danger: #c0392b;
+    --success: #27ae60;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.09);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  /* STICKY TABS */
+  #tab-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--primary);
+    box-shadow: 0 3px 16px rgba(0,0,0,0.18);
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  #tab-nav::-webkit-scrollbar { display: none; }
+  #tab-nav ul {
+    display: inline-flex;
+    list-style: none;
+    padding: 0 0.5rem;
+    min-width: 100%;
+  }
+  #tab-nav ul li button {
+    display: block;
+    padding: 0.85rem 1.1rem;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.72);
+    font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+  #tab-nav ul li button:hover { color: #fff; background: rgba(255,255,255,0.08); }
+  #tab-nav ul li button.active {
+    color: var(--accent2);
+    border-bottom-color: var(--accent2);
+    font-weight: 700;
+  }
+  /* MAIN */
+  .main-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+  }
+  .tab-section { display: none; }
+  .tab-section.active { display: block; }
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, #2563a8 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: clamp(1.5rem, 4vw, 2.8rem) clamp(1.2rem, 4vw, 2.5rem);
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-size: clamp(1.2rem, 3vw, 1.9rem);
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: 0.6rem;
+  }
+  .hero .subtitle {
+    font-size: clamp(0.85rem, 1.8vw, 1rem);
+    opacity: 0.85;
+    margin-bottom: 1rem;
+  }
+  .hero .meta { font-size: 0.82rem; opacity: 0.7; }
+  .hero .doi-link { display: inline-block; margin-top: 0.8rem; color: #ffd98a; font-size: 0.85rem; text-decoration: none; border-bottom: 1px dotted #ffd98a; }
+  .hero .doi-link:hover { color: #fff; border-bottom-color: #fff; }
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: clamp(1rem, 3vw, 1.6rem);
+    margin-bottom: 1.2rem;
+    overflow: hidden;
+  }
+  .card-title {
+    font-size: clamp(0.95rem, 2vw, 1.1rem);
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .card-title .toggle-icon {
+    margin-left: auto;
+    font-size: 1rem;
+    color: var(--accent);
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  .card-title.collapsed .toggle-icon { transform: rotate(-90deg); }
+  .card-body { overflow: hidden; }
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+  /* KPI */
+  .kpi-box {
+    background: linear-gradient(135deg, var(--accent) 0%, #1a5fa0 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 1.1rem 1rem;
+    text-align: center;
+  }
+  .kpi-box .kpi-val {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1;
+  }
+  .kpi-box .kpi-label { font-size: 0.78rem; opacity: 0.88; margin-top: 0.3rem; }
+  .kpi-box.accent2 { background: linear-gradient(135deg, var(--accent2) 0%, #c07010 100%); }
+  .kpi-box.success { background: linear-gradient(135deg, var(--success) 0%, #1a7a40 100%); }
+  .kpi-box.danger { background: linear-gradient(135deg, var(--danger) 0%, #8a1a10 100%); }
+  /* TABLE */
+  .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 480px; }
+  th {
+    background: var(--primary);
+    color: #fff;
+    padding: 0.55rem 0.7rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+  td { padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: #f0f4f8; }
+  tr:hover td { background: #e4edf7; }
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    padding: 0.18rem 0.55rem;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-green { background: #d1fae5; color: #065f46; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-yellow { background: #fef3c7; color: #92400e; }
+  /* PROP BOX */
+  .prop-box {
+    border-left: 4px solid var(--accent);
+    background: #eef5fc;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 0.8rem 1rem;
+    margin: 0.7rem 0;
+    font-size: 0.88rem;
+  }
+  .prop-box strong { color: var(--primary); }
+  .prop-box.p2 { border-color: var(--accent2); background: #fef9ec; }
+  .prop-box.p3 { border-color: var(--success); background: #edfaf3; }
+  /* QUOTE */
+  .quote {
+    border-left: 3px solid var(--accent2);
+    padding: 0.6rem 1rem;
+    background: #fffbf0;
+    border-radius: 0 6px 6px 0;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin: 0.6rem 0;
+  }
+  /* CHART CONTAINER */
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    max-height: 420px;
+  }
+  .chart-wrap canvas { max-height: 420px; }
+  /* FLOW */
+  .flow-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+  }
+  .flow-box {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+  }
+  .flow-box.orange { background: var(--accent2); }
+  .flow-box.green { background: var(--success); }
+  .flow-box.red { background: var(--danger); }
+  .flow-arrow { font-size: 1.2rem; color: var(--muted); flex-shrink: 0; }
+  /* SECTION HEADER */
+  .sec-header {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    font-weight: 800;
+    color: var(--primary);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.4rem;
+    margin-bottom: 1rem;
+  }
+  /* LIST */
+  .styled-list { list-style: none; padding: 0; }
+  .styled-list li {
+    padding: 0.4rem 0 0.4rem 1.4rem;
+    position: relative;
+    font-size: 0.88rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .styled-list li:last-child { border-bottom: none; }
+  .styled-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 0.8rem;
+    top: 0.45rem;
+  }
+  /* COMPARE */
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  @media (max-width: 560px) {
+    .compare-row { grid-template-columns: 1fr; }
+  }
+  .compare-col { border-radius: var(--radius); padding: 1rem; }
+  .compare-col.left { background: #eef5fc; border: 1px solid #b8d4ee; }
+  .compare-col.right { background: #fef9ec; border: 1px solid #f0d080; }
+  .compare-col h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .compare-col.left h4 { color: var(--accent); }
+  .compare-col.right h4 { color: #b07010; }
+  p { margin-bottom: 0.6rem; font-size: 0.88rem; }
+  p:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<nav id="tab-nav" role="navigation" aria-label="メインナビゲーション">
+  <ul>
+    <li><button class="active" data-tab="overview" onclick="switchTab('overview', this)">研究の概要</button></li>
+    <li><button data-tab="theory" onclick="switchTab('theory', this)">理論的枠組み</button></li>
+    <li><button data-tab="methods" onclick="switchTab('methods', this)">研究方法</button></li>
+    <li><button data-tab="findings" onclick="switchTab('findings', this)">主要な発見</button></li>
+    <li><button data-tab="model" onclick="switchTab('model', this)">解釈モデル</button></li>
+    <li><button data-tab="conclusions" onclick="switchTab('conclusions', this)">結論と含意</button></li>
+  </ul>
+</nav>
+
+<div class="main-wrap">
+
+  <!-- ===== OVERVIEW ===== -->
+  <section id="overview" class="tab-section active">
+    <div class="hero">
+      <div class="meta">Clark G. Gilbert · ハーバード大学 · Academy of Management Journal（2005年, 第48巻第5号, 741–763頁）</div>
+      <h1>慣性の構造を解きほぐす：資源硬直性とルーティン硬直性</h1>
+      <p class="subtitle">デジタルメディアの台頭に直面した新聞社の対応を事例に、二種類の慣性の逆説的な相互作用メカニズムを解明する</p>
+      <a class="doi-link" href="https://doi.org/10.5465/amj.2005.18803920" target="_blank" rel="noopener">📄 原文を読む (DOI) ↗</a>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:1.2rem;">
+      <div class="kpi-box"><div class="kpi-val">8</div><div class="kpi-label">研究対象の新聞社サイト</div></div>
+      <div class="kpi-box accent2"><div class="kpi-val">62</div><div class="kpi-label">インタビュー件数</div></div>
+      <div class="kpi-box success"><div class="kpi-val">2</div><div class="kpi-label">慣性の核心的タイプ</div></div>
+      <div class="kpi-box danger"><div class="kpi-val">5</div><div class="kpi-label">中心的な研究命題</div></div>
+      <div class="kpi-box" style="background:linear-gradient(135deg,#6b21a8,#4c1d95)"><div class="kpi-val">400%</div><div class="kpi-label">資源拡大の最大幅</div></div>
+      <div class="kpi-box" style="background:linear-gradient(135deg,#0f766e,#134e4a)"><div class="kpi-val">1.8x</div><div class="kpi-label">分離型の市場浸透スコア平均</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>🎯</span> 中心的な研究課題
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="compare-row">
+          <div class="compare-col left">
+            <h4>資源硬直性（Resource Rigidity）</h4>
+            <p>企業が資源投資パターンを変えられないこと——すなわち、非連続的変化が要求する新技術・新事業へ<strong>投資しようとしない</strong>状態。</p>
+            <p>原因：資源依存（既存顧客による制約）＋市場地位への再投資インセンティブ。</p>
+          </div>
+          <div class="compare-col right">
+            <h4>ルーティン硬直性（Routine Rigidity）</h4>
+            <p>企業が資源を用いる組織プロセスを変えられないこと——すなわち、投資を支える行動パターンや基底にある論理を<strong>変えられない</strong>状態。</p>
+            <p>原因：構造的埋め込み、認知の固定化、活用型プロセスによる探索型プロセスの締め出し。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>⚡</span> 中心的なパラドックスの発見
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="flow-row">
+          <div class="flow-box orange">脅威の知覚</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box green">資源硬直性を克服 ✓</div>
+          <span class="flow-arrow">+</span>
+          <div class="flow-box red">ルーティン硬直性を増幅 ✗</div>
+        </div>
+        <p style="margin-top:0.8rem;">脅威の知覚は二種類の慣性に対して<strong>正反対の方向</strong>の影響を及ぼす。これは、脅威が「触媒」なのか「制約」なのかをめぐる先行研究の見かけ上の矛盾を説明する。</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>📰</span> 研究の背景：新聞業界のデジタル化への対応
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <ul class="styled-list">
+          <li>4つの新聞社グループが各2紙を保有し、合計8つの研究サイトを構成</li>
+          <li>日刊印刷版の発行部数：1日平均20万〜50万部超</li>
+          <li>各紙は1994〜1996年にかけて相次いでウェブサイトを開設</li>
+          <li>オンライン出版は非連続的変化であった：ビジネスモデル、コスト構造、顧客ニーズのいずれも印刷版とは根本的に異なる</li>
+          <li>分類広告（多くの都市新聞では利益の約60%を占める）は、オンライン・プラットフォームによる侵食という大きな脅威に直面</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== THEORY ===== -->
+  <section id="theory" class="tab-section">
+    <h2 class="sec-header">理論的枠組み</h2>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>📚</span> 資源硬直性の理論的起源
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="grid-2">
+          <div>
+            <h4 style="color:var(--accent);margin-bottom:0.5rem;font-size:0.9rem;">資源依存理論</h4>
+            <ul class="styled-list">
+              <li>外部の資源提供者（資本市場・顧客市場）が内部の戦略選択を制約する</li>
+              <li>新技術が既存顧客ではなく新興セグメントにしか応えられない場合、資源配分メカニズムはその技術への資源提供を拒みがちである</li>
+              <li>注意（アテンション）という資源も同様に制約を受ける（Ocasio, 1997）</li>
+            </ul>
+          </div>
+          <div>
+            <h4 style="color:var(--accent);margin-bottom:0.5rem;font-size:0.9rem;">市場地位への再投資インセンティブ</h4>
+            <ul class="styled-list">
+              <li>新技術への参入が阻まれている場合、在来企業は既存の市場地位に投資し続ける強い動機をもつ</li>
+              <li>新技術への投資が支配的地位を弱めるなら、企業には投資しないという戦略的動機が生じる（Reinganum, 1983）</li>
+              <li>共食い（カニバリゼーション）への懸念が「様子見」戦略の蔓延を招く</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>🔄</span> ルーティン硬直性の理論的起源
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <ul class="styled-list">
+          <li><strong>構造的埋め込み：</strong>特定の環境に高度に適合した組織プロセスは変えにくい。自己強化的であり、非連続性への適応を想定して設計されていないため</li>
+          <li><strong>活用が探索を締め出す：</strong>活用型（exploitation）プロセスが探索型（exploration）プロセスを駆逐し、新たな能力の発展を困難にする（March, 1991）</li>
+          <li><strong>認知の固定化：</strong>ルーティン設計時の本来の意図が実行者から切り離され、深く内面化された認知となる（Prahalad & Bettis, 1986）</li>
+          <li><strong>暗黙知化：</strong>認知が暗黙知となり、ルーティンのどこに問題の根源があるのかを管理者が認識しにくくなる（Schein, 1985）</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>⚖️</span> 脅威の知覚が慣性に及ぼす矛盾した影響
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="compare-row">
+          <div class="compare-col left">
+            <h4>脅威は触媒である（研究潮流1）</h4>
+            <ul class="styled-list">
+              <li>脅威に伴うストレスが慣性を克服しうる（Huff et al., 1992）</li>
+              <li>業績悪化の脅威に直面した企業ほど戦略変革にコミットしやすい（Lant et al., 1992）</li>
+              <li>管理者は外部変化を業績への負の影響と捉えて初めて内部変革を進められる（Barr & Huff, 1997）</li>
+            </ul>
+          </div>
+          <div class="compare-col right">
+            <h4>脅威は制約である（研究潮流2）</h4>
+            <ul class="styled-list">
+              <li>脅威は権限の収縮や手続きの標準化を招く（Staw et al., 1981）</li>
+              <li>脅威は検討される選択肢の数を狭め、実験の水準を低下させる（Ross & Staw, 1993）</li>
+              <li>脅威が誘発する行動は、新たな機会の創造よりも既存資源の保護に向かう（Dutton, 1992）</li>
+            </ul>
+          </div>
+        </div>
+        <div class="prop-box" style="margin-top:0.8rem;">
+          <strong>本研究の解答：</strong>二つの研究潮流は、それぞれ異なるタイプの慣性を測定していた。前者は資源投入への意欲（資源硬直性）を、後者は組織プロセスや論理の変化（ルーティン硬直性）を測っている。脅威は両者に対して逆方向に作用するのであり、矛盾しているわけではない。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== METHODS ===== -->
+  <section id="methods" class="tab-section">
+    <h2 class="sec-header">研究方法</h2>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>🏗️</span> 研究デザイン
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <ul class="styled-list">
+          <li><strong>方法論：</strong>理論精緻化（Theory Elaboration）——先行研究で区別されてこなかった理論的連関を明らかにする</li>
+          <li><strong>デザイン：</strong>マルチケース・デザイン。「複製の論理」を採用し、ケース群を一連の実験として扱う</li>
+          <li><strong>分析単位：</strong>新聞社グループ傘下のオンライン事業（主単位）＋親新聞社およびコーポレート経営層（埋め込み単位）</li>
+          <li><strong>ケース選択：</strong>理論的サンプリング。両極端のタイプ（革新型 vs. 硬直型）から各4件を選定</li>
+          <li><strong>データ収集期間：</strong>2000〜2001年、約1年半にわたる</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>📊</span> データソースの概要
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="grid-3" style="margin-bottom:1rem;">
+          <div class="kpi-box"><div class="kpi-val">62</div><div class="kpi-label">インタビュー総件数（電話11件を含む）</div></div>
+          <div class="kpi-box accent2"><div class="kpi-val">33</div><div class="kpi-label">社内アーカイブ文書</div></div>
+          <div class="kpi-box success"><div class="kpi-val">24</div><div class="kpi-label">直接観察した事象</div></div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr><th>新聞</th><th>親会社</th><th>日刊発行部数</th><th>開設年</th><th>2000年のオンライン従業員数</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Beacon A</td><td>Beacon社</td><td>25万部</td><td>1994</td><td>45</td></tr>
+              <tr><td>Beacon B</td><td>Beacon社</td><td>20万部</td><td>1995</td><td>20</td></tr>
+              <tr><td>Press A</td><td>Press社</td><td>50万部超</td><td>1994</td><td>約100</td></tr>
+              <tr><td>Press B</td><td>Press社</td><td>40万部</td><td>1995</td><td>60</td></tr>
+              <tr><td>Expositor A</td><td>Expositor社</td><td>50万部超</td><td>1995</td><td>約100</td></tr>
+              <tr><td>Expositor B</td><td>Expositor社</td><td>20万部</td><td>1996</td><td>32</td></tr>
+              <tr><td>Morning News A</td><td>Morning News社</td><td>50万部超</td><td>1994</td><td>約100</td></tr>
+              <tr><td>Morning News B</td><td>Morning News社</td><td>30万部</td><td>1996</td><td>41</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>🔍</span> コーディングと分析のプロセス
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <p>脅威の知覚を識別する3つの次元（Dutton & Jackson, 1987）：</p>
+        <div class="grid-3" style="margin:0.6rem 0;">
+          <div class="kpi-box" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)"><div class="kpi-val" style="font-size:1.1rem;">否定的焦点</div><div class="kpi-label">Negative Focus</div></div>
+          <div class="kpi-box danger"><div class="kpi-val" style="font-size:1.1rem;">損失の強調</div><div class="kpi-label">Emphasis on Loss</div></div>
+          <div class="kpi-box" style="background:linear-gradient(135deg,#b45309,#78350f)"><div class="kpi-val" style="font-size:1.1rem;">制御不能感</div><div class="kpi-label">Lack of Control</div></div>
+        </div>
+        <ul class="styled-list">
+          <li>インタビューとアーカイブ・データを時系列に配列し、脅威の知覚がどう変化したかを追跡</li>
+          <li>第二の評価者が盲検で独立にコーディングを行い、元のコーディングと矛盾は生じなかった</li>
+          <li>分析的複製（Yin, 1994）を採用：文字どおりの複製（literal replication） vs. 理論的複製（theoretical replication）</li>
+          <li>ケース横断のパターン配列と表形式での提示（Miles & Huberman, 1984）</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FINDINGS ===== -->
+  <section id="findings" class="tab-section">
+    <h2 class="sec-header">主要な発見</h2>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>💰</span> 脅威の知覚が資源硬直性を克服する（命題1a・1b）
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="prop-box">
+          <strong>命題1a：</strong>非連続的変化に直面した際、迫りくる脅威の知覚は、資源依存に由来する資源硬直性を管理者が克服することを可能にする。
+        </div>
+        <div class="prop-box">
+          <strong>命題1b：</strong>非連続的変化に直面した際、迫りくる脅威の知覚は、在来企業の地位への再投資インセンティブに由来する資源硬直性を管理者が克服することを可能にする。
+        </div>
+        <div class="chart-wrap" style="margin:1rem 0;">
+          <canvas id="chartExpenditure"></canvas>
+        </div>
+        <div class="quote">「これを手がけなければ、いずれ自分たちに跳ね返ってくるのではないか、と感じ始めた。」——Beacon A 営業マネージャー</div>
+        <div class="quote">「マッキンゼーが衝撃的な分析を示し、1998年までに分類広告収入の20〜30%が失われると予測した。これが一部の人々に大きな警鐘を鳴らした。」</div>
+        <p style="margin-top:0.8rem;"><span class="badge badge-green">8サイト中7サイト</span> が文字どおりの複製パターンを示した。Morning News A は機会駆動型（脅威駆動型ではない）であったため、理論的複製にあたる。</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>🔒</span> 脅威の知覚がルーティン硬直性を増幅する（命題2a・2b・2c）
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="grid-3" style="margin-bottom:1rem;">
+          <div style="background:#fee2e2;border-radius:8px;padding:0.8rem;">
+            <div style="font-weight:700;color:#991b1b;margin-bottom:0.4rem;">① 権限の収縮</div>
+            <p style="font-size:0.82rem;">コーポレート経営層が意思決定権を引き戻し、現場部門に集権的統制を課して、事業計画のテンプレートを強制する。</p>
+          </div>
+          <div style="background:#fef3c7;border-radius:8px;padding:0.8rem;">
+            <div style="font-weight:700;color:#92400e;margin-bottom:0.4rem;">② 実験の減少</div>
+            <p style="font-size:0.82rem;">急速な資源コミットメントがロックイン効果を生み、初期の方向が誤っていても修正が難しくなる。いわば「加速しながら方向を見失う」状態。</p>
+          </div>
+          <div style="background:#dbeafe;border-radius:8px;padding:0.8rem;">
+            <div style="font-weight:700;color:#1e40af;margin-bottom:0.4rem;">③ 既存資源への集中</div>
+            <p style="font-size:0.82rem;">中核事業を共食いする恐れから、管理者は新技術がもたらす新たな機会を探るのではなく、既存資源の防衛に意識を集中させる。</p>
+          </div>
+        </div>
+        <div class="prop-box p2">
+          <strong>命題2a：</strong>迫りくる脅威の知覚は権限の収縮を招き、ルーティン硬直性を増幅する。
+        </div>
+        <div class="prop-box p2">
+          <strong>命題2b：</strong>迫りくる脅威の知覚は実験の水準を低下させ、ルーティン硬直性を増幅する。
+        </div>
+        <div class="prop-box p2">
+          <strong>命題2c：</strong>迫りくる脅威の知覚は既存資源への集中を招き、ルーティン硬直性を増幅する。
+        </div>
+        <div class="chart-wrap" style="margin-top:1rem;">
+          <canvas id="chartRoutine"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>🌐</span> 外部の影響と構造的分離（命題3・4）
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="prop-box p3">
+          <strong>命題3：</strong>非連続的変化への対応を決定する際に外部の影響を取り込むことは、管理者が新規事業を親組織から構造的に分離する可能性を高める。
+        </div>
+        <div class="prop-box p3">
+          <strong>命題4：</strong>構造的分離は、親組織における脅威の知覚と新規事業における機会の知覚とを切り離す（デカップリングする）のに役立つ。
+        </div>
+        <div class="tbl-wrap" style="margin-top:0.8rem;">
+          <table>
+            <thead>
+              <tr><th>新聞</th><th>外部影響の源泉</th><th>構造の選択</th><th>経営者のフレーミング</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Beacon A</td><td>外部パートナー(1997)／外部オンラインCEO(1999)</td><td><span class="badge badge-green">分離</span></td><td>機会の知覚が立ち現れる</td></tr>
+              <tr><td>Beacon B</td><td>外部アドバイザー(1998)</td><td><span class="badge badge-green">分離</span></td><td>機会の知覚が立ち現れる</td></tr>
+              <tr><td>Press A</td><td>外部取締役(1997)／外部オンラインCEO(1997)</td><td><span class="badge badge-green">分離</span></td><td>機会の知覚が立ち現れる</td></tr>
+              <tr><td>Press B</td><td>CEOの個人的助言者(1994)／外部の事業計画コンサルタント(1995)</td><td><span class="badge badge-green">分離</span></td><td>機会の知覚が立ち現れる</td></tr>
+              <tr><td>Expositor A</td><td>主要な外部影響なし</td><td><span class="badge badge-red">統合</span></td><td>脅威の知覚が持続</td></tr>
+              <tr><td>Expositor B</td><td>主要な外部影響なし</td><td><span class="badge badge-red">統合</span></td><td>脅威の知覚が持続</td></tr>
+              <tr><td>Morning News A</td><td>主要な外部影響なし</td><td><span class="badge badge-yellow">統合（ハイブリッド）</span></td><td>脅威の知覚が持続</td></tr>
+              <tr><td>Morning News B</td><td>主要な外部影響なし</td><td><span class="badge badge-red">統合</span></td><td>脅威の知覚が持続</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>📈</span> 構造的分離によるイノベーション成果の比較
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap">
+          <canvas id="chartPerformance"></canvas>
+        </div>
+        <div class="prop-box p3" style="margin-top:0.8rem;">
+          <strong>命題5：</strong>外部の影響、構造的分離、機会フレーミングの三者が組み合わさることで、新規事業におけるルーティン硬直性が緩和される。
+        </div>
+        <div class="quote">「いまや独立した私たちは、新聞と一体だった頃にはありえなかった形で、この機会を自分たちのものとして所有している。」——Beacon社 新メディア部門の新責任者</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MODEL ===== -->
+  <section id="model" class="tab-section">
+    <h2 class="sec-header">解釈モデル</h2>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>🗺️</span> 非連続的変化への対応に関する解釈モデル
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <p style="margin-bottom:1rem;">以下のモデルは、脅威の知覚が異なる経路を通じて二種類の慣性にどう影響するか、そして構造的分離がどのようにデカップリングを実現するかを示す：</p>
+
+        <div style="background:#f0f4f8;border-radius:10px;padding:1rem;margin-bottom:1rem;">
+          <div style="font-weight:700;color:var(--primary);margin-bottom:0.6rem;font-size:0.9rem;">段階一：初期の資源硬直性（脅威の知覚がない状態）</div>
+          <div class="flow-row">
+            <div class="flow-box" style="background:#64748b;">資源依存<br><small>既存顧客による制約</small></div>
+            <span class="flow-arrow">+</span>
+            <div class="flow-box" style="background:#64748b;">地位への再投資<br><small>共食いへの懸念</small></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box red">資源硬直性<br><small>新技術への投資を拒む</small></div>
+          </div>
+        </div>
+
+        <div style="background:#eef5fc;border-radius:10px;padding:1rem;margin-bottom:1rem;">
+          <div style="font-weight:700;color:var(--accent);margin-bottom:0.6rem;font-size:0.9rem;">段階二：脅威の知覚がもたらす二重の効果</div>
+          <div class="flow-row">
+            <div class="flow-box orange">脅威の知覚<br><small>否定・損失・制御不能</small></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box green">資源硬直性を克服<br><small>資源を大幅に拡大</small></div>
+          </div>
+          <div class="flow-row" style="margin-top:0.5rem;">
+            <div class="flow-box orange">脅威の知覚</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box red">権限の収縮</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box red">実験の減少</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box red">既存資源への集中</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box red">ルーティン硬直性を増幅</div>
+          </div>
+        </div>
+
+        <div style="background:#edfaf3;border-radius:10px;padding:1rem;">
+          <div style="font-weight:700;color:var(--success);margin-bottom:0.6rem;font-size:0.9rem;">段階三：デカップリングのメカニズム（ルーティン硬直性の克服）</div>
+          <div class="flow-row">
+            <div class="flow-box" style="background:#0f766e;">外部の影響<br><small>外部ネットワークの結節点</small></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box" style="background:#0f766e;">構造的分離<br><small>独立子会社</small></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box green">機会フレーミング<br><small>新規事業</small></div>
+            <span class="flow-arrow">+</span>
+            <div class="flow-box orange">脅威フレーミング<br><small>親会社</small></div>
+          </div>
+          <div style="margin-top:0.6rem;font-size:0.83rem;color:var(--muted);">
+            構造的分離が認知のデカップリングを実現する：親会社は脅威の知覚によって資源硬直性を克服し続ける一方で、新規事業は機会の知覚によって同時にルーティン硬直性を緩和する。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>🔬</span> 代表的事例：Press B の突破
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <p>Press B は当初から構造的分離を実施した唯一のサイトであり、ルーティン硬直性が最も低いサイトでもあった：</p>
+        <ul class="styled-list">
+          <li>CEO のシリコンバレーの個人的助言者が、外部の視点を取り入れるよう進言した</li>
+          <li>シリコンバレーの新メディア経験者を招いて当初の事業計画を作成。その計画は親新聞社から大きな自律性をもつことを求めていた</li>
+          <li>完全子会社として設立し、独自ブランド・独自の営業チーム・独立したオフィスを備えた</li>
+          <li>サイトコンテンツの50%超が新聞以外の情報源に由来</li>
+          <li>新たな収益カテゴリーを3つ獲得（他サイトの平均は1つ）</li>
+          <li>地域市場の浸透スコアは1.7（統合型サイトの平均は約1.0）</li>
+        </ul>
+        <div class="quote">「いまや新聞由来のページビューは、当サイトの全ページのわずか3分の1強にすぎない。私たちは本当に、新聞とは別の会社になりつつある。」——オンライン編集者</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>🔄</span> 「能動的慣性」概念との関連
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="compare-row">
+          <div class="compare-col left">
+            <h4>資源硬直性＝動機の問題</h4>
+            <p>線分上の移動に関わる——管理者は投資する意思があるか？</p>
+            <p>たとえるなら：投資規模の大小</p>
+          </div>
+          <div class="compare-col right">
+            <h4>ルーティン硬直性＝構造の問題</h4>
+            <p>線分の軌道に関わる——投資はどの方向へ展開されるか？</p>
+            <p>たとえるなら：投資方向の正しさ</p>
+          </div>
+        </div>
+        <div class="prop-box" style="margin-top:0.8rem;">
+          Sull（1999）はこうしたパターンを「能動的慣性（Active Inertia）」と呼んだ。管理者は積極的に投資しているにもかかわらず、依然として誤ったルーティンの軌道に沿って資源を展開してしまう——いわば「加速しながら方向を見失う」状態である。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONCLUSIONS ===== -->
+  <section id="conclusions" class="tab-section">
+    <h2 class="sec-header">結論と経営への含意</h2>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>🎓</span> 理論的貢献
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <ul class="styled-list">
+          <li><strong>文献上の矛盾を解消：</strong>資源硬直性とルーティン硬直性を区別することで、脅威の知覚が「触媒」でもあり「制約」でもあるという見かけ上の矛盾を説明した</li>
+          <li><strong>慣性の構造を精緻化：</strong>二種類の慣性は異なる因果メカニズムをもち、独立に変動しうる。一括りに扱うべきではない</li>
+          <li><strong>構造的自律性研究の拡張：</strong>外部の影響が構造的分離の意思決定を駆動する重要な先行要因であることを明らかにした</li>
+          <li><strong>デカップリングのメカニズム：</strong>構造的自律性は、イノベーションの場を提供するだけでなく、脅威認知と機会認知を組織の異なる部分で同時に作用させることを可能にする</li>
+          <li><strong>測定レベルの明確化：</strong>先行研究では、資源投入への意欲を測る変数と支配的論理の変化を測る変数とが混同されていた。本研究はこれを整理した</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>💼</span> 経営実践への含意
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="grid-2">
+          <div style="background:#eef5fc;border-radius:8px;padding:1rem;">
+            <div style="font-weight:700;color:var(--accent);margin-bottom:0.5rem;">脅威を資源コミットメントの触媒として活用する</div>
+            <p style="font-size:0.85rem;">管理者は脅威の知覚がもつ力を借りて資源コミットメントを促進できる。ただし、それがルーティンに及ぼす負の影響には警戒が必要である。</p>
+          </div>
+          <div style="background:#fef9ec;border-radius:8px;padding:1rem;">
+            <div style="font-weight:700;color:#b07010;margin-bottom:0.5rem;">外部ネットワークの結節点を取り込む</div>
+            <p style="font-size:0.85rem;">外部ネットワークを積極的に広げ、新メディアの経験をもつ外部人材を招き入れることが、内部の認知の固定化を打破する助けとなる。</p>
+          </div>
+          <div style="background:#edfaf3;border-radius:8px;padding:1rem;">
+            <div style="font-weight:700;color:var(--success);margin-bottom:0.5rem;">新規事業を構造的に分離する</div>
+            <p style="font-size:0.85rem;">新規事業を親組織から構造的に分離することで、事業側の管理者は機会フレーミングで運営でき、同時に親会社は脅威フレーミングを維持できる。</p>
+          </div>
+          <div style="background:#fee2e2;border-radius:8px;padding:1rem;">
+            <div style="font-weight:700;color:#991b1b;margin-bottom:0.5rem;">「能動的慣性」の罠を警戒する</div>
+            <p style="font-size:0.85rem;">資源投入は適応の成功を意味しない。非連続的変化への対応には、基底にある組織ルーティンの変革もまた不可欠である。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>⚠️</span> 研究の限界と今後の方向
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <ul class="styled-list">
+          <li>脅威の知覚は主に、新聞業界の将来に対する外部アナリストの予測によって引き起こされた。外部圧力なしで内発的な脅威動機が生じるかは検証を要する</li>
+          <li>本研究は非連続的変化の文脈に焦点を当てており、脅威とルーティン硬直性の関連は連続的変化のもとでは異なる可能性がある</li>
+          <li>外部影響の源泉とCEOのネットワークとの関連は示唆的であるにとどまり、より正式な検証が必要である</li>
+          <li>外部の影響・構造的分離・機会フレーミングの三者が独立に変動しうるかは、さらなる研究を要する</li>
+          <li>ネットワークの結節点がもつ影響力のメカニズム（地位 vs. 相互作用の強度）の解明が必要である</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" onclick="toggleCard(this)">
+        <span>📋</span> 5つの中心的命題のまとめ
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="prop-box">
+          <strong>P1a：</strong>脅威の知覚は、資源依存に由来する資源硬直性を管理者が克服することを可能にする。
+        </div>
+        <div class="prop-box">
+          <strong>P1b：</strong>脅威の知覚は、在来企業の地位への再投資インセンティブに由来する資源硬直性を管理者が克服することを可能にする。
+        </div>
+        <div class="prop-box p2">
+          <strong>P2a：</strong>脅威の知覚は権限の収縮を招き、ルーティン硬直性を増幅する。
+        </div>
+        <div class="prop-box p2">
+          <strong>P2b：</strong>脅威の知覚は実験を減少させ、ルーティン硬直性を増幅する。
+        </div>
+        <div class="prop-box p2">
+          <strong>P2c：</strong>脅威の知覚は既存資源への集中を招き、ルーティン硬直性を増幅する。
+        </div>
+        <div class="prop-box p3">
+          <strong>P3：</strong>外部の影響は構造的分離の可能性を高める。
+        </div>
+        <div class="prop-box p3">
+          <strong>P4：</strong>構造的分離は、親会社の脅威の知覚と新規事業の機会の知覚とを切り離す。
+        </div>
+        <div class="prop-box p3">
+          <strong>P5：</strong>外部の影響＋構造的分離＋機会フレーミングが組み合わさることで、ルーティン硬直性が緩和される。
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- end main-wrap -->
+
+<script>
+(function() {
+  'use strict';
+
+  // ===== TAB SYSTEM =====
+  function switchTab(tabId, btn) {
+    try {
+      var sections = document.querySelectorAll('.tab-section');
+      var buttons = document.querySelectorAll('#tab-nav button');
+      sections.forEach(function(s) { s.classList.remove('active'); });
+      buttons.forEach(function(b) { b.classList.remove('active'); });
+      var target = document.getElementById(tabId);
+      if (target) {
+        target.classList.add('active');
+        console.log('Tab switched to: ' + tabId);
+      }
+      if (btn) btn.classList.add('active');
+      // Lazy init charts
+      if (!window.chartInitialized) window.chartInitialized = {};
+      if (tabId === 'findings' && !window.chartInitialized['findings']) {
+        window.chartInitialized['findings'] = true;
+        setTimeout(function() { initFindingsCharts(); }, 80);
+      }
+      if (tabId === 'model' && !window.chartInitialized['model']) {
+        window.chartInitialized['model'] = true;
+      }
+    } catch(e) { console.error('Tab switch error:', e); }
+  }
+  window.switchTab = switchTab;
+
+  // ===== COLLAPSIBLE CARDS =====
+  function toggleCard(titleEl) {
+    try {
+      if (!titleEl) return;
+      var body = titleEl.nextElementSibling;
+      if (!body) return;
+      var isCollapsed = titleEl.classList.contains('collapsed');
+      if (isCollapsed) {
+        body.style.display = '';
+        titleEl.classList.remove('collapsed');
+      } else {
+        body.style.display = 'none';
+        titleEl.classList.add('collapsed');
+      }
+    } catch(e) { console.error('Toggle error:', e); }
+  }
+  window.toggleCard = toggleCard;
+
+  // ===== CHARTS =====
+  if (!window.chartInstances) window.chartInstances = {};
+
+  function destroyChart(id) {
+    if (window.chartInstances[id]) {
+      try { window.chartInstances[id].destroy(); } catch(e) {}
+      delete window.chartInstances[id];
+    }
+  }
+
+  function initFindingsCharts() {
+    try { initExpenditureChart(); } catch(e) { console.error('Expenditure chart error:', e); }
+    try { initRoutineChart(); } catch(e) { console.error('Routine chart error:', e); }
+    try { initPerformanceChart(); } catch(e) { console.error('Performance chart error:', e); }
+  }
+
+  function initExpenditureChart() {
+    var el = document.getElementById('chartExpenditure');
+    if (!el) return;
+    destroyChart('chartExpenditure');
+    var labels = ['Beacon A', 'Beacon B', 'Press A', 'Press B', 'Expositor A', 'Expositor B', 'Morning News A', 'Morning News B'];
+    var data = [400, 300, 300, 250, 300, 200, 200, 180];
+    window.chartInstances['chartExpenditure'] = new Chart(el, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '資源拡大の幅（％）',
+          data: data,
+          backgroundColor: [
+            'rgba(46,125,190,0.8)', 'rgba(46,125,190,0.8)',
+            'rgba(232,160,32,0.8)', 'rgba(232,160,32,0.8)',
+            'rgba(39,174,96,0.8)', 'rgba(39,174,96,0.8)',
+            'rgba(155,89,182,0.8)', 'rgba(155,89,182,0.8)'
+          ],
+          borderRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
+        plugins: {
+          legend: { display: false },
+          title: { display: true, text: '脅威の知覚が高まった時期における各サイトの資源拡大の幅（％）', font: { size: 13 } }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: '拡大の幅（％）' },
+            ticks: { callback: function(v) { return v + '%'; } }
+          }
+        }
+      }
+    });
+  }
+
+  function initRoutineChart() {
+    var el = document.getElementById('chartRoutine');
+    if (!el) return;
+    destroyChart('chartRoutine');
+    var labels = ['Beacon A', 'Beacon B', 'Press A', 'Press B', 'Expositor A', 'Expositor B', 'Morning News A', 'Morning News B'];
+    var printContent = [75, 85, 85, 50, 85, 85, 90, 80];
+    var newRevenue = [1, 1, 3, 3, 1, 1, 1, 1];
+    window.chartInstances['chartRoutine'] = new Chart(el, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: '印刷版コンテンツの比率（％）',
+            data: printContent,
+            backgroundColor: 'rgba(192,57,43,0.75)',
+            borderRadius: 4,
+            yAxisID: 'y'
+          },
+          {
+            label: '新たな収益カテゴリー数',
+            data: newRevenue,
+            backgroundColor: 'rgba(39,174,96,0.75)',
+            borderRadius: 4,
+            yAxisID: 'y2'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
+        plugins: {
+          title: { display: true, text: 'ルーティン硬直性の指標：印刷版コンテンツ比率 vs. 新たな収益カテゴリー', font: { size: 13 } }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            position: 'left',
+            title: { display: true, text: '印刷版コンテンツの比率（％）' },
+            ticks: { callback: function(v) { return v + '%'; } }
+          },
+          y2: {
+            beginAtZero: true,
+            position: 'right',
+            title: { display: true, text: '新たな収益カテゴリー数' },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+  }
+
+  function initPerformanceChart() {
+    var el = document.getElementById('chartPerformance');
+    if (!el) return;
+    destroyChart('chartPerformance');
+    var labels = ['Beacon A\n(分離)', 'Beacon B\n(分離)', 'Press A\n(分離)', 'Press B\n(分離)', 'Expositor A\n(統合)', 'Expositor B\n(統合)', 'Morning News A\n(統合)', 'Morning News B\n(統合)'];
+    var penetration = [1.9, 1.4, 2.1, 1.7, 1.1, 0.9, 1.0, 0.5];
+    var revenues = [4, 4, 6, 5, 2, 1, 1, 2];
+    var colors = [
+      'rgba(39,174,96,0.8)', 'rgba(39,174,96,0.8)',
+      'rgba(39,174,96,0.8)', 'rgba(39,174,96,0.8)',
+      'rgba(192,57,43,0.7)', 'rgba(192,57,43,0.7)',
+      'rgba(192,57,43,0.7)', 'rgba(192,57,43,0.7)'
+    ];
+    window.chartInstances['chartPerformance'] = new Chart(el, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: '地域市場の浸透スコア',
+            data: penetration,
+            backgroundColor: colors,
+            borderRadius: 4,
+            yAxisID: 'y'
+          },
+          {
+            label: '新たな収益カテゴリー数',
+            data: revenues,
+            type: 'line',
+            borderColor: 'rgba(46,125,190,0.9)',
+            backgroundColor: 'rgba(46,125,190,0.15)',
+            pointBackgroundColor: 'rgba(46,125,190,1)',
+            pointRadius: 5,
+            tension: 0.3,
+            yAxisID: 'y2'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
+        plugins: {
+          title: { display: true, text: '構造的分離 vs. 統合：市場浸透スコアとイノベーション成果の比較', font: { size: 13 } },
+          legend: { position: 'bottom' }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            position: 'left',
+            title: { display: true, text: '市場浸透スコア' }
+          },
+          y2: {
+            beginAtZero: true,
+            position: 'right',
+            title: { display: true, text: '新たな収益カテゴリー数' },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+  }
+
+  // ===== INIT =====
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('Report initialized');
+    // Init overview tab charts if needed (none on overview)
+    // Resize handler
+    window.addEventListener('resize', function() {
+      Object.keys(window.chartInstances).forEach(function(k) {
+        try {
+          if (window.chartInstances[k]) window.chartInstances[k].resize();
+        } catch(e) {}
+      });
+    });
+  });
+
+  window.addEventListener('load', function() {
+    // Check if findings tab is active on load
+    var findingsSection = document.getElementById('findings');
+    if (findingsSection && findingsSection.classList.contains('active')) {
+      if (!window.chartInitialized) window.chartInitialized = {};
+      if (!window.chartInitialized['findings']) {
+        window.chartInitialized['findings'] = true;
+        initFindingsCharts();
+      }
+    }
+  });
+
+})();
+</script>
+<script>window.parent.postMessage({ action: "ready" }, "*");
+
+window.console = new Proxy(console, {
+  get(target, prop) {
+    if (['log', 'warn', 'error'].includes(prop)) {
+      return new Proxy(target[prop], {
+        apply(fn, thisArg, args) {
+          fn.apply(thisArg, args);
+          window.parent.postMessage({ action: 'console',
+            type: prop,
+            args: args.map((arg) => {
+              try {
+                return JSON.stringify(arg).replace(/^["']|["']$/g, '');
+              } catch (e) {
+                return arg;
+              }
+            })
+          }, '*');
+        }
+      });
+    }
+    return target[prop];
+  }
+});
+</script></body>
+</html>

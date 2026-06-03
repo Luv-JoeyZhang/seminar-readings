@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>変化の創発：ミッション教会のエグゼクティブ・レポート</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f4f7fb;
+            color: #1a1a2e;
+            line-height: 1.8;
+        }
+        .sticky-tabs {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #ffffff;
+            border-bottom: 1px solid #e0e6ed;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 0.75rem 1rem;
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+        .sticky-tabs::-webkit-scrollbar {
+            height: 4px;
+        }
+        .sticky-tabs::-webkit-scrollbar-thumb {
+            background: #c0c8d4;
+            border-radius: 4px;
+        }
+        .tab-btn {
+            flex-shrink: 0;
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 24px;
+            background: #eef2f7;
+            color: #3a4a5c;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .tab-btn:hover {
+            background: #dce4ed;
+        }
+        .tab-btn.active {
+            background: #2563eb;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+        .section {
+            display: none;
+            background: #fff;
+            border-radius: 16px;
+            padding: 2rem 1.8rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        }
+        .section.active {
+            display: block;
+        }
+        h1 {
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.3rem;
+            line-height: 1.4;
+        }
+        h2 {
+            font-size: clamp(1.2rem, 3vw, 1.7rem);
+            font-weight: 600;
+            color: #1e293b;
+            border-left: 4px solid #2563eb;
+            padding-left: 1rem;
+            margin: 1.5rem 0 1rem;
+        }
+        h3 {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            font-weight: 600;
+            color: #334155;
+            margin: 1.2rem 0 0.6rem;
+        }
+        p {
+            margin-bottom: 1rem;
+            color: #2d3a4a;
+        }
+        .subtitle {
+            font-size: 0.95rem;
+            color: #5a6a7a;
+            margin-bottom: 1rem;
+        }
+        .doi-link {
+            display: inline-block;
+            font-size: 0.9rem;
+            color: #2563eb;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            border: 1px solid #bdd6f0;
+            border-radius: 20px;
+            padding: 0.35rem 0.9rem;
+            background: #f0f9ff;
+            transition: all 0.2s;
+        }
+        .doi-link:hover {
+            background: #2563eb;
+            color: #fff;
+        }
+        .collapse-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eaeef4;
+            user-select: none;
+        }
+        .collapse-header:hover {
+            color: #2563eb;
+        }
+        .collapse-header .arrow {
+            transition: transform 0.3s;
+            font-size: 1.2rem;
+            color: #6b7b8b;
+        }
+        .collapse-header .arrow.open {
+            transform: rotate(180deg);
+        }
+        .collapse-content {
+            overflow: hidden;
+            max-height: 2000px;
+            transition: max-height 0.4s ease;
+            padding: 0.5rem 0;
+        }
+        .collapse-content.collapsed {
+            max-height: 0;
+            padding: 0;
+        }
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            max-height: 400px;
+            margin: 1.5rem auto;
+        }
+        .chart-wrapper canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 350px;
+        }
+        .key-highlight {
+            background: #eef6ff;
+            border-left: 4px solid #2563eb;
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin: 1.2rem 0;
+        }
+        .stat-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2563eb;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: #5a6a7a;
+            margin-top: 0.2rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        th, td {
+            border: 1px solid #dde3eb;
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        th {
+            background: #f1f5f9;
+            font-weight: 600;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem 0.8rem 2rem;
+            }
+            .section {
+                padding: 1.2rem 1rem;
+            }
+            .sticky-tabs {
+                padding: 0.5rem 0.6rem;
+            }
+            .tab-btn {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.9rem;
+            }
+            .stat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .proposition-box {
+            background: #f0f9ff;
+            border: 1px solid #bdd6f0;
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            margin: 0.8rem 0;
+        }
+        .proposition-box strong {
+            color: #1e40af;
+        }
+        .formula-block {
+            overflow-x: auto;
+            padding: 0.5rem 0;
+            text-align: center;
+        }
+        .timeline-compact {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin: 1rem 0;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            align-items: baseline;
+        }
+        .timeline-year {
+            font-weight: 700;
+            color: #2563eb;
+            min-width: 60px;
+        }
+        .timeline-desc {
+            color: #2d3a4a;
+        }
+        .img-placeholder {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #e8edf4;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7a8a9a;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+        .img-placeholder:before {
+            content: "【イメージ図：ミッション教会の変化のプロセス】";
+        }
+        .img-placeholder-mini {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #eef2f7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7a8a9a;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+        }
+        .img-placeholder-mini:before {
+            content: "【データ図示：変化の4類型マトリクス】";
+        }
+        .flex-chart-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin: 1.2rem 0;
+        }
+        .flex-chart-row > div {
+            flex: 1 1 280px;
+            min-width: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="sticky-tabs" id="tabNav">
+        <button class="tab-btn active" data-tab="tab-overview">📋 エグゼクティブ・サマリー</button>
+        <button class="tab-btn" data-tab="tab-context">🌐 変化の背景</button>
+        <button class="tab-btn" data-tab="tab-process">🔄 変化のプロセス</button>
+        <button class="tab-btn" data-tab="tab-mechanism">⚙️ 増幅メカニズム</button>
+        <button class="tab-btn" data-tab="tab-implications">📊 理論的含意</button>
+    </div>
+
+    <div class="container">
+        <!-- エグゼクティブ・サマリー -->
+        <div class="section active" id="tab-overview">
+            <h1>小さな変化はいかにラディカルな変革を引き起こすのか</h1>
+            <p class="subtitle">ミッション教会の事例研究 ｜ 複雑系理論の視点から見た組織変革<br>Plowman, Baker, Beck, Kulkarni, Solansky & Travis (2007), <em>Academy of Management Journal</em>, 50(3), 515–543.</p>
+            <a class="doi-link" href="https://doi.org/10.5465/amj.2007.25525647" target="_blank" rel="noopener">📄 原文を読む (DOI) ↗</a>
+            <div class="key-highlight">
+                <p><strong>中核的な発見：</strong> ホームレスの人々に朝食を提供するという小さな行為が、意図せざるかたちで継続的かつ深刻なラディカルな変革を引き起こした。この変革はリーダー層の戦略的意図から生まれたものではなく、複雑系のなかで創発した自己組織化のプロセスに由来する。</p>
+            </div>
+
+            <div class="collapse-header" onclick="toggleCollapse(this)">
+                <strong>📌 研究の背景と問い</strong>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapse-content">
+                <p>ミッション教会（仮名）は、かつて都心にあった「シルクストッキング（富裕層）の教会」であり、信徒の多くは裕福な人々であった。しかし、50年以上にわたる衰退によって消滅の危機に瀕していた。1999年、数人の若者たちが日曜朝の退屈をまぎらわすなかで、教会の前を通りかかるホームレスに無料の朝食を提供してはどうかと提案した。この単純な行為がすべてを変えることになるとは、誰も予想していなかった。</p>
+                <p>既存の変革理論（Greenwood & Hinings, 1996; Weick & Quinn, 1999 など）では、こうした<strong>意図せざる、連続的なラディカルな変革</strong>を十分に説明できない。本研究は複雑系理論を手がかりとし、詳細な事例研究の手法を通じて、小さな変化が特定の条件下でいかに創発し、システム全体を変える変革へと増幅されるのかを明らかにする。</p>
+            </div>
+
+            <div class="collapse-header" onclick="toggleCollapse(this)">
+                <strong>🔑 4つの主要な発見</strong>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapse-content">
+                <ol style="padding-left:1.5rem; margin:0.8rem 0;">
+                    <li><strong>意図せざる創発</strong>：ラディカルな変革は、計画された突発的な出来事ではなく、意図されず、緩やかに、創発的に進行した。</li>
+                    <li><strong>不安定化の条件が触媒となる</strong>：組織の長期的衰退、リーダーの交代、アイデンティティの揺らぎ、継続的なコンフリクトが「平衡から遠く離れた状態」をつくり出し、小さな変化が芽生える素地となった。</li>
+                    <li><strong>増幅行動が変化を駆動する</strong>：資源の獲得、言語の再構築、象徴的行動が、当初の小さな変化を増幅し、ラディカルな方向へと推し進めた。</li>
+                    <li><strong>動的な相互作用が継続的変化を生む</strong>：増幅行動・文脈的条件・小さな変化の三者が継続的に相互作用し、変革を絶えず深化させていった。</li>
+                </ol>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-number">46%</div>
+                    <div class="stat-label">1999年の信徒増加率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">200+</div>
+                    <div class="stat-label">日曜朝の食事提供人数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">2万+</div>
+                    <div class="stat-label">年間の食事提供数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">10%</div>
+                    <div class="stat-label">マイノリティ比率(2004年)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 変化の背景 -->
+        <div class="section" id="tab-context">
+            <h2>平衡から遠く離れた状態：変化を育む土壌</h2>
+            <p>複雑系理論によれば、システムは「平衡から遠く離れた状態（far-from-equilibrium）」へと押しやられて初めて、真の自己組織化と創発が生じる（Prigogine & Stengers, 1984）。ミッション教会は1990年代に4つの不安定化の力を経験し、それが小さな変化が創発するための理想的な条件をつくり出した。</p>
+
+            <div class="collapse-header" onclick="toggleCollapse(this)">
+                <strong>📉 1. 組織の衰退</strong>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapse-content">
+                <p>教会は資産には恵まれていた（基金は数百万ドル規模。ある信徒は「基金に400万ドルある」と語り、無指定の基金は300万ドルにのぼった）が、現金は極度に不足していた。出席者数は50年にわたって減少を続け、多くのリーダー層が去っていった。光熱費を節約するために閉鎖された使われない別棟が、かつての活気を思い起こさせる存在となっていた。ある信徒は「私たちは博物館になりかけている」と語った。こうした存続の危機が、システムを高い緊張状態へと追い込んでいった。</p>
+            </div>
+
+            <div class="collapse-header" onclick="toggleCollapse(this)">
+                <strong>👥 2. リーダーの交代</strong>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapse-content">
+                <p>1995年に夫婦の共同牧師が任命される前、教会は3年間で2人の牧師が入れ替わっていた。このリーダーの交代もまたシステムの不安定化に寄与した。さらに、夫婦による共同牧師という体制はこの教派ではきわめて異例であり、保守的な信徒たちにとってもう一つの不安定化の衝撃となった可能性がある。新しいリーダーたちは多くの旧来の慣行を打ち破った。週日には施錠されていた教会の扉を開け、防犯システムを撤去し、教会のオフィスを入口近くへ移した。ある証言者は「彼ら（牧師たち）が来たとき、よい意味でこの世界をひっくり返してくれた」と語った。こうした「攪乱（かくらん）」が、朝食のアイデアが芽生える場に動揺を加えていった。</p>
+            </div>
+
+            <div class="collapse-header" onclick="toggleCollapse(this)">
+                <strong>❓ 3. アイデンティティの揺らぎ</strong>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapse-content">
+                <p>教会は長らく「私たちは何者か」という問いをめぐって揺れ続けていた。エリートの「シルクストッキング教会」という伝統的なアイデンティティを保つのか、それとも包摂性（インクルーシブネス）を受け入れるのか。リーダーたちが立ち上げようとした包摂をめぐる議論（とりわけ同性愛者の受容）は、多くの信徒の離脱を招いた。ある証言者は「インクルーシブな教会になるという決定が……とりわけゲイやレズビアンに対する受容が、多くの信徒を動揺させ、その多くが去っていった」と語った。信徒たちは当時の状態を「混沌」「流動」「根本的な変化」「進化」といった言葉で表現した。</p>
+            </div>
+
+            <div class="collapse-header" onclick="toggleCollapse(this)">
+                <strong>⚡ 4. 継続的なコンフリクト</strong>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapse-content">
+                <p>コンフリクトの歴史は古い。1964年には、人種を理由とする信徒の排除を認めないという教派の決定をめぐって対立が生じた（教会のリーダーには元クー・クラックス・クラン〔KKK〕の「グランド・ドラゴン」もいた）。翌年に亡くなったこのKKKの元指導者の名を冠した礼拝堂は、後にコンフリクトの火種となった。さらに、現代的なジャズ音楽の導入など礼拝のあり方をめぐる論争も起きた。コンフリクトは次々と現れては対処され、また別のコンフリクトへと続いていき、組織のエネルギーが絶えず消費され、システムは高い変動状態に置かれていた。</p>
+            </div>
+
+            <div class="chart-wrapper">
+                <canvas id="contextChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 変化のプロセス -->
+        <div class="section" id="tab-process">
+            <h2>一杯の朝食から一つの運動へ</h2>
+            <p>変化の起点は、1999年のある夕食の席で、一人の若者が何気なく口にした提案だった――「教会の前を通るホームレスに朝食を出してはどうか」。5週間後、19人のボランティアが75人のホームレスに最初の朝食を提供した。彼らはこの取り組みを「カフェ・コラソン（Café Corazón）」と名づけ、ホームレスが尊厳をもって扱われない従来の炊き出しとは違うものにしようとした。</p>
+
+            <div class="img-placeholder"></div>
+
+            <div class="collapse-header" onclick="toggleCollapse(this)">
+                <strong>📅 主要な年表</strong>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapse-content">
+                <div class="timeline-compact">
+                    <div class="timeline-item"><span class="timeline-year">1999</span><span class="timeline-desc">最初の朝食：75人が食事、ボランティア19人。信徒数が前年比46%増加</span></div>
+                    <div class="timeline-item"><span class="timeline-year">1999</span><span class="timeline-desc">200人超へ急増。医師が自発的に医療サービスを開始（第1の増幅）</span></div>
+                    <div class="timeline-item"><span class="timeline-year">2000</span><span class="timeline-desc">医療・歯科・眼科の診療室を設置。教会のミッション・ステートメントが変更され「周縁化された人々」を重視</span></div>
+                    <div class="timeline-item"><span class="timeline-year">2002</span><span class="timeline-desc">KKK指導者を称える礼拝堂の銘板を撤去し聖杯へ鋳直す。市内に屋外広告を掲出</span></div>
+                    <div class="timeline-item"><span class="timeline-year">2003</span><span class="timeline-desc">市と年10万ドルの食事提供契約。基金から50万ドルを投入。501(c)(3)非営利法人を設立</span></div>
+                    <div class="timeline-item"><span class="timeline-year">2004</span><span class="timeline-desc">デイセンター開設。牧師がホームレスの逮捕に介入して逮捕される。マイノリティ比率10%に</span></div>
+                    <div class="timeline-item"><span class="timeline-year">2005</span><span class="timeline-desc">教会敷地を「セーフゾーン」と宣言。連帯を示すため都心でデモ行進を主催</span></div>
+                </div>
+            </div>
+
+            <div class="collapse-header" onclick="toggleCollapse(this)">
+                <strong>📊 変化の4類型マトリクス</strong>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapse-content">
+                <p>ミッション教会の変化は<strong>第4象限</strong>、すなわち「連続的なラディカルな変革（continuous radical change）」に該当する。これは、ラディカルな変革は緩やかには起こりえないとする従来の見解（Romanelli & Tushman, 1994）と鋭く対照をなす。Greenwood & Hinings（1996）の「範囲（収束的／ラディカル）」と Weick & Quinn（1999）の「ペース（連続的／断続的）」という2軸を組み合わせると、4つの象限が描き出される。</p>
+                <table>
+                    <tr><th></th><th>収束的</th><th>ラディカル</th></tr>
+                    <tr><th>断続的</th><td>第2象限：迅速な漸進的置換</td><td>第3象限：フレームを揺さぶる計画的な置換</td></tr>
+                    <tr><th>連続的</th><td>第1象限：局所的な適応の積み重ね</td><td><strong>第4象限：本研究の対象</strong></td></tr>
+                </table>
+                <div class="img-placeholder-mini"></div>
+            </div>
+        </div>
+
+        <!-- 増幅メカニズム -->
+        <div class="section" id="tab-mechanism">
+            <h2>増幅行動：小さな変化はいかに大きな変革になるのか</h2>
+            <p>複雑系理論は、偏差を増幅する過程における正のフィードバックの役割を強調する（Maruyama, 1963）。ミッション教会の変革は、3つの典型的な増幅行動によって駆動された。</p>
+
+            <div class="collapse-header" onclick="toggleCollapse(this)">
+                <strong>💰 資源の獲得と再配置</strong>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapse-content">
+                <p>最初の増幅は、医師の「とにかく始めただけだ」という行動から生まれた――彼は聴診器や薬を持ち込み、専門知識を提供した。やがて朝食は教会の予算に組み込まれ、市の助成金も申請された。新たな資金が入るたびに、より多くのプログラムが生まれた。オルガン奏者の部屋は診察室に、控室はシャワー室に、教室の一部は衣類保管庫へと姿を変えた。資源の流入は正の循環を形づくった――新サービス→より多くのホームレス→より大きな需要→さらなる資源、というように。最終的には、平日にホームレスが職員の業務を妨げるという問題への対応として、週を通じてサービスを提供する「デイセンター」の設立へとつながっていった。</p>
+            </div>
+
+            <div class="collapse-header" onclick="toggleCollapse(this)">
+                <strong>🗣️ 言語の再構築</strong>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapse-content">
+                <p>言語は意味形成（センスメイキング）の中核的な手段である。牧師たちは言葉を慎重に選んだ。「ホームレス」に代えて「周縁化された人々（marginalized）」を、また「無家者」に代えて「利用者（consumers）」を用い、自分たちの営みを「変容（transformation）」と表現した。説教は聖書に登場する周縁の人々の物語を軸に組み立てられた。屋外広告には「地獄も裁きもありません（Hell and Judgment Not Included）」と掲げられた。こうした言語が、創発しつつある変化に一貫性と使命感を与えた。重要なのは、この言語は牧師が公式に押しつけたものではなく、職員や信徒のあいだに自然に広がっていったという点である。</p>
+            </div>
+
+            <div class="collapse-header" onclick="toggleCollapse(this)">
+                <strong>🎭 象徴的行動</strong>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapse-content">
+                <p>象徴は変革のなかで決定的な役割を果たした。牧師は身ぎれいにした12人の「周縁化された人々」を連れて、ホームレス問題を議論する都心のビジネス・リーダーの朝食会に「乗り込んだ」。翌年には、ホームレス（デイセンターの利用者）を尋問する警官に介入して逮捕された。KKK指導者の名を冠した礼拝堂の銘板を聖杯に鋳直し、黒人信徒が中心の「姉妹教会」へ贈った。ホームレスの夫婦のためにキャンドルを灯した結婚式を執り行った。これらの行動は、内外に向けて同じメッセージを繰り返し発信した――この教会は変わったのだ、と。</p>
+            </div>
+
+            <div class="chart-wrapper">
+                <canvas id="amplifierChart"></canvas>
+            </div>
+
+            <h3>3つの増幅行動の動的な相互作用</h3>
+            <p>注目すべきは、これら3つの行動が独立して機能していたわけではないという点である。たとえば、助成金の申請（資源）には目的を特定の言葉で記述すること（言語）が求められ、助成金活用後のメディア報道（象徴）が新しいアイデンティティをさらに強化した。こうした相互作用が、変革の進展をいっそう加速させていった。</p>
+        </div>
+
+        <!-- 理論的含意 -->
+        <div class="section" id="tab-implications">
+            <h2>理論的命題とマネジメントへの示唆</h2>
+
+            <div class="collapse-header" onclick="toggleCollapse(this)">
+                <strong>📚 6つの理論的命題</strong>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapse-content">
+                <div class="proposition-box">
+                    <strong>命題1：組織的緊張の効果</strong><br>
+                    文脈的条件（衰退・コンフリクト・リーダー交代など）の数と強度によって生じる組織的緊張が大きいほど、小さな変化が創発し、ラディカルな変革へと増幅されやすくなる。
+                </div>
+                <div class="proposition-box">
+                    <strong>命題2〜4：増幅行動の触媒作用</strong><br>
+                    高い組織的緊張のもとでは、（2）資源の利用可能性、（3）言語の使用、（4）象徴の使用は、いずれも小さな変化からラディカルな変革への転化を加速させる。
+                </div>
+                <div class="proposition-box">
+                    <strong>命題5：増幅行動の相乗効果</strong><br>
+                    高い組織的緊張のもとでは、複数の増幅行動どうしの相互作用が、単一の行動よりも効果的に、小さな変化を一つのパターンへと積み重ねていく。
+                </div>
+                <div class="proposition-box">
+                    <strong>命題6：継続的な相互作用が継続的な変革を駆動する</strong><br>
+                    増幅行動と文脈的条件の継続的な相互作用が、ラディカルな変革を断続的にではなく連続的に進行させる。
+                </div>
+            </div>
+
+            <div class="collapse-header" onclick="toggleCollapse(this)">
+                <strong>💡 リーダーシップへの示唆</strong>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapse-content">
+                <p>この事例はリーダーシップに新たな見方を提示する。リーダーは変革の創造者ではなく、むしろ<strong>意味の付与者（センスギバー、sensegiver）</strong>である。従来のラディカル変革論がリーダーによる変革の創出や引き金に注目してきたのとは異なり、創発的なラディカルな変革においてリーダーに求められる中核的な能力は次の点にある。</p>
+                <ul style="padding-left:1.5rem; margin:0.8rem 0;">
+                    <li>創発しつつあるパターンを察知し、名づける</li>
+                    <li>簡潔で一貫した言語によって変化に意味を与える</li>
+                    <li>予期せぬ出来事に対して開かれた態度と好奇心を保つ</li>
+                    <li>不確実性に耐え、急いで統制を押しつけようとしない</li>
+                </ul>
+                <p>共同牧師たちの4年間にわたる「失敗に終わった模索」は、かえって後の創発のための条件をつくり出した――彼らは不確実性を急いで閉じようとするのではなく、システムの開放性と緊張を保ったのである。もしラディカルな変革がリーダーシップだけに帰せられるものであったなら、新しいリーダーの着任と同時に再生が始まっていたはずである。しかし実際には、若者たちが小さな種をまくまでに4年の歳月を要した。</p>
+            </div>
+
+            <div class="collapse-header" onclick="toggleCollapse(this)">
+                <strong>📋 マネジメント実践への5つの提言</strong>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapse-content">
+                <ol style="padding-left:1.5rem; margin:0.8rem 0;">
+                    <li><strong>予期せぬ出来事を受け入れる</strong>：驚きを失敗の兆候ではなく機会としてとらえる</li>
+                    <li><strong>言語を巧みに用いる</strong>：一貫した語彙を使い、創発する変化に首尾一貫性を与える</li>
+                    <li><strong>資源を配置する</strong>：「人を引きつける力」をもつ小さな実験に柔軟な資金を充てる</li>
+                    <li><strong>象徴をデザインする</strong>：意味のある行動を通じて変革のシグナルを発信する</li>
+                    <li><strong>コンフリクトを許容する</strong>：コンフリクトはシステムが平衡から遠ざかる際の正常な現れである</li>
+                </ol>
+            </div>
+
+            <div class="key-highlight">
+                <p><strong>中核的な結論：</strong> ラディカルな変革は、緩やかに、創発的に、意図せざるかたちで進行しうる。鍵となるのは、システムが「平衡から遠く離れた状態」にあるかどうか、そして当初の小さな変化を効果的に増幅しうる行動メカニズムが存在するかどうかである。これは、従来の「トップダウンの変革」とはまったく異なる風景を描き出す――変化はボトムから創発し、鋭敏なリーダーによって察知され意味を与えられ、やがてより大きなパターンへと進化していくのである。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!window.chartInstances) window.chartInstances = {};
+
+            // Tab system
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const sections = document.querySelectorAll('.section');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    try {
+                        const targetId = this.dataset.tab;
+                        if (!targetId) return;
+                        console.log('[Tab] 切り替え:', targetId);
+
+                        tabBtns.forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+
+                        sections.forEach(s => s.classList.remove('active'));
+                        const targetSection = document.getElementById(targetId);
+                        if (targetSection) {
+                            targetSection.classList.add('active');
+                            // Lazy load charts per tab
+                            lazyInitCharts(targetId);
+                        } else {
+                            console.warn('[Tab] セクションが見つかりません:', targetId);
+                        }
+                    } catch(err) {
+                        console.error('[Tab] 切り替えエラー:', err);
+                    }
+                });
+            });
+
+            // Collapse toggles
+            window.toggleCollapse = function(headerEl) {
+                try {
+                    if (!headerEl) return;
+                    const content = headerEl.nextElementSibling;
+                    if (!content || !content.classList) return;
+                    const arrow = headerEl.querySelector('.arrow');
+                    const isCollapsed = content.classList.toggle('collapsed');
+                    if (arrow) {
+                        arrow.classList.toggle('open', !isCollapsed);
+                    }
+                    console.log('[Collapse] 切り替え:', isCollapsed ? '折りたたみ' : '展開');
+                } catch(e) {
+                    console.error('[Collapse] エラー:', e);
+                }
+            };
+
+            // Collapse headers default expanded
+            document.querySelectorAll('.collapse-content').forEach(el => el.classList.remove('collapsed'));
+            document.querySelectorAll('.collapse-header .arrow').forEach(el => el.classList.add('open'));
+
+            // Chart init function (lazy)
+            function lazyInitCharts(tabId) {
+                try {
+                    if (tabId === 'tab-context') {
+                        if (!window.chartInstances['contextChart']) {
+                            const ctx = document.getElementById('contextChart');
+                            if (!ctx) return;
+                            window.chartInstances['contextChart'] = new Chart(ctx, {
+                                type: 'radar',
+                                data: {
+                                    labels: ['組織の衰退', 'リーダーの交代', 'アイデンティティの揺らぎ', '継続的なコンフリクト'],
+                                    datasets: [{
+                                        label: '不安定化の強度 (1-5)',
+                                        data: [5, 4, 5, 5],
+                                        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                                        borderColor: '#2563eb',
+                                        pointBackgroundColor: '#2563eb',
+                                        borderWidth: 2
+                                    }, {
+                                        label: '変革後の強度 (2005年)',
+                                        data: [3, 3, 2, 4],
+                                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                                        borderColor: '#10b981',
+                                        pointBackgroundColor: '#10b981',
+                                        borderWidth: 2
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: true,
+                                    plugins: {
+                                        legend: { position: 'bottom' },
+                                        title: { display: true, text: '文脈的な不安定化要因の強度比較' }
+                                    },
+                                    scales: {
+                                        r: {
+                                            beginAtZero: true,
+                                            max: 5,
+                                            ticks: { stepSize: 1 }
+                                        }
+                                    }
+                                }
+                            });
+                            console.log('[チャート] 文脈レーダーチャートを初期化しました');
+                        }
+                    }
+                    if (tabId === 'tab-mechanism') {
+                        if (!window.chartInstances['amplifierChart']) {
+                            const ctx = document.getElementById('amplifierChart');
+                            if (!ctx) return;
+                            window.chartInstances['amplifierChart'] = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: ['資源の獲得', '言語の使用', '象徴的行動'],
+                                    datasets: [{
+                                        label: '引用数 (インタビュー・データ)',
+                                        data: [105, 32, 30],
+                                        backgroundColor: ['#2563eb', '#10b981', '#f59e0b'],
+                                        borderRadius: 6
+                                    }, {
+                                        label: '引用数 (新聞記事データ)',
+                                        data: [6, 8, 16],
+                                        backgroundColor: ['#93c5fd', '#6ee7b7', '#fcd34d'],
+                                        borderRadius: 6
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: true,
+                                    indexAxis: 'y',
+                                    plugins: {
+                                        legend: { position: 'bottom' },
+                                        title: { display: true, text: '3つの増幅行動の証拠の強さ' }
+                                    },
+                                    scales: {
+                                        x: { beginAtZero: true }
+                                    }
+                                }
+                            });
+                            console.log('[チャート] 増幅行動の棒グラフを初期化しました');
+                        }
+                    }
+                } catch(err) {
+                    console.error('[LazyInit] チャート初期化エラー:', err);
+                }
+            }
+
+            // Init any visible section charts on load
+            sections.forEach(s => {
+                if (s.classList.contains('active')) {
+                    lazyInitCharts(s.id);
+                }
+            });
+
+            // Window resize handler
+            window.addEventListener('resize', function() {
+                try {
+                    Object.values(window.chartInstances).forEach(chart => {
+                        if (chart && chart.resize) chart.resize();
+                    });
+                    console.log('[Resize] チャートを再調整しました');
+                } catch(e) {
+                    console.error('[Resize] エラー:', e);
+                }
+            });
+
+            // MathJax re-render after tab switch
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (window.MathJax && MathJax.typesetPromise) {
+                        MathJax.typesetPromise().then(() => {
+                            console.log('[MathJax] 数式を再レンダリングしました');
+                        }).catch(err => {
+                            console.warn('[MathJax] レンダリング警告:', err);
+                        });
+                    }
+                });
+            });
+
+            console.log('[初期化] すべてのシステムが準備完了');
+        });
+    </script>
+<script>window.parent.postMessage({ action: "ready" }, "*");
+
+window.console = new Proxy(console, {
+  get(target, prop) {
+    if (['log', 'warn', 'error'].includes(prop)) {
+      return new Proxy(target[prop], {
+        apply(fn, thisArg, args) {
+          fn.apply(thisArg, args);
+          window.parent.postMessage({ action: 'console',
+            type: prop,
+            args: args.map((arg) => {
+              try {
+                return JSON.stringify(arg).replace(/^["']|["']$/g, '');
+              } catch (e) {
+                return arg;
+              }
+            })
+          }, '*');
+        }
+      });
+    }
+    return target[prop];
+  }
+});
+</script></body>
+</html>

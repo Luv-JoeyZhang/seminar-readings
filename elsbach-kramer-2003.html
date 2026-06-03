@@ -1,0 +1,847 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ハリウッドのピッチ・ミーティングにおける創造性評価</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #1a2744;
+    --accent: #c8922a;
+    --accent2: #3a6ea8;
+    --bg: #f4f6fa;
+    --card: #ffffff;
+    --text: #1e2535;
+    --muted: #6b7280;
+    --border: #e2e8f0;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --radius: 10px;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.8; overflow-x: hidden; }
+
+  /* STICKY TABS */
+  #tab-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--primary);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+  #tab-nav::-webkit-scrollbar { height: 3px; }
+  #tab-nav::-webkit-scrollbar-thumb { background: var(--accent); }
+  .tab-list { display: inline-flex; min-width: 100%; padding: 0 1rem; }
+  .tab-btn {
+    display: inline-block; padding: 0.85rem 1.2rem;
+    color: rgba(255,255,255,0.7); font-size: 0.88rem; font-weight: 500;
+    cursor: pointer; border: none; background: none;
+    border-bottom: 3px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap; letter-spacing: 0.02em;
+  }
+  .tab-btn:hover { color: #fff; }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* MAIN LAYOUT */
+  .main-wrap { max-width: 960px; margin: 0 auto; padding: 2rem 1.2rem 3rem; }
+
+  /* SECTION */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, #2d4a7a 100%);
+    color: #fff; border-radius: var(--radius); padding: 2.5rem 2rem;
+    margin-bottom: 1.8rem;
+  }
+  .hero h1 { font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 700; line-height: 1.4; margin-bottom: 0.8rem; }
+  .hero .authors { font-size: 0.9rem; color: rgba(255,255,255,0.75); margin-bottom: 1rem; }
+  .hero .abstract { font-size: 0.95rem; color: rgba(255,255,255,0.88); line-height: 1.85; }
+  .hero .doi-link { display: inline-block; margin-top: 1.1rem; font-size: 0.85rem; color: var(--accent); text-decoration: none; border: 1px solid rgba(200,146,42,0.5); border-radius: 20px; padding: 0.35rem 0.95rem; transition: background 0.15s; }
+  .hero .doi-link:hover { background: rgba(200,146,42,0.15); }
+
+  /* CARDS */
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem; margin-bottom: 1.4rem; border: 1px solid var(--border); }
+  .card-title { font-size: 1.05rem; font-weight: 700; color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+  .card-title::before { content: ''; display: inline-block; width: 4px; height: 1.1em; background: var(--accent); border-radius: 2px; }
+
+  /* COLLAPSIBLE */
+  .collapsible-header {
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; user-select: none; padding: 1rem 1.2rem;
+    background: var(--card); border-radius: var(--radius);
+    border: 1px solid var(--border); margin-bottom: 0.6rem;
+    box-shadow: var(--shadow);
+    transition: background 0.15s;
+  }
+  .collapsible-header:hover { background: #f0f4ff; }
+  .collapsible-header h3 { font-size: 1rem; font-weight: 600; color: var(--primary); }
+  .collapsible-arrow { font-size: 1.1rem; color: var(--accent); transition: transform 0.25s; }
+  .collapsible-arrow.open { transform: rotate(180deg); }
+  .collapsible-body { display: block; padding: 0 0.2rem 0.4rem; }
+  .collapsible-body.hidden { display: none; }
+
+  /* STATS ROW */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-bottom: 1.4rem; }
+  .stat-box { background: var(--card); border-radius: var(--radius); padding: 1.2rem 1rem; text-align: center; box-shadow: var(--shadow); border-top: 3px solid var(--accent); }
+  .stat-num { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; color: var(--primary); }
+  .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th { background: var(--primary); color: #fff; padding: 0.7rem 0.9rem; text-align: left; font-weight: 600; }
+  td { padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  tr:hover td { background: #eef3ff; }
+
+  /* BADGE */
+  .badge { display: inline-block; padding: 0.2em 0.7em; border-radius: 20px; font-size: 0.78rem; font-weight: 600; }
+  .badge-high { background: #d1fae5; color: #065f46; }
+  .badge-mid { background: #fef3c7; color: #92400e; }
+  .badge-low { background: #fee2e2; color: #991b1b; }
+  .badge-strong { background: #dbeafe; color: #1e40af; }
+  .badge-moderate { background: #ede9fe; color: #5b21b6; }
+
+  /* CHART CONTAINER */
+  .chart-wrap { position: relative; width: 100%; max-height: 420px; }
+  .chart-wrap canvas { max-height: 420px; }
+
+  /* QUOTE */
+  blockquote { border-left: 4px solid var(--accent); padding: 0.8rem 1.2rem; background: #fffbf0; border-radius: 0 var(--radius) var(--radius) 0; font-style: normal; color: #4a4a4a; margin: 0.8rem 0; font-size: 0.92rem; }
+
+  /* PROCESS FLOW */
+  .process-flow { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; justify-content: center; margin: 1rem 0; }
+  .process-box { background: var(--primary); color: #fff; border-radius: var(--radius); padding: 0.9rem 1.2rem; text-align: center; font-size: 0.88rem; font-weight: 600; flex: 1; min-width: 130px; max-width: 200px; }
+  .process-box.accent { background: var(--accent); }
+  .process-box.accent2 { background: var(--accent2); }
+  .process-arrow { font-size: 1.4rem; color: var(--muted); }
+
+  /* PROTOTYPE GRID */
+  .proto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+  .proto-card { border-radius: var(--radius); padding: 1rem; border: 1px solid var(--border); background: var(--card); }
+  .proto-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .proto-card p { font-size: 0.82rem; color: var(--muted); }
+  .proto-high { border-top: 3px solid #10b981; }
+  .proto-mid { border-top: 3px solid #f59e0b; }
+  .proto-low { border-top: 3px solid #ef4444; }
+
+  /* HIGHLIGHT BOX */
+  .highlight { background: linear-gradient(135deg, #eef3ff, #f0f9ff); border-radius: var(--radius); padding: 1.2rem 1.4rem; border: 1px solid #c7d9f5; margin: 1rem 0; }
+  .highlight strong { color: var(--primary); }
+
+  /* FIGURE */
+  .figure-wrap { text-align: center; margin: 1.2rem 0; }
+  .figure-wrap img { max-width: 100%; border-radius: var(--radius); box-shadow: var(--shadow); }
+  .figure-caption { font-size: 0.82rem; color: var(--muted); margin-top: 0.5rem; }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .main-wrap { padding: 1rem 0.7rem 2rem; }
+    .hero { padding: 1.5rem 1rem; }
+    .tab-btn { padding: 0.75rem 0.9rem; font-size: 0.82rem; }
+    .process-arrow { display: none; }
+    .process-flow { flex-direction: column; align-items: stretch; }
+    .process-box { max-width: 100%; }
+  }
+  @media (min-width: 601px) and (max-width: 900px) {
+    .main-wrap { padding: 1.5rem 1rem 2.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="tab-nav" role="navigation" aria-label="メインナビゲーション">
+  <div class="tab-list">
+    <button class="tab-btn active" data-tab="overview">研究概要</button>
+    <button class="tab-btn" data-tab="method">研究方法</button>
+    <button class="tab-btn" data-tab="process1">プロセス1：人物カテゴリー化</button>
+    <button class="tab-btn" data-tab="process2">プロセス2：関係カテゴリー化</button>
+    <button class="tab-btn" data-tab="model">二重プロセス・モデル</button>
+    <button class="tab-btn" data-tab="implications">理論と実践</button>
+  </div>
+</nav>
+
+<div class="main-wrap">
+
+  <!-- ===== TAB 1: 研究概要 ===== -->
+  <section id="tab-overview" class="section active">
+    <div class="hero">
+      <h1>ハリウッドのピッチ・ミーティングにおける創造性評価：創造性判断の二重プロセス・モデルの実証研究</h1>
+      <div class="authors">Kimberly D. Elsbach（カリフォルニア大学デイビス校）&nbsp;&nbsp;·&nbsp;&nbsp;Roderick M. Kramer（スタンフォード大学）&nbsp;&nbsp;·&nbsp;&nbsp;Academy of Management Journal, 2003, Vol. 46, No. 3, 283–301</div>
+      <div class="abstract">
+        本研究は、ハリウッドの「ピッチ・ミーティング」を対象に、専門家（映画スタジオの幹部やプロデューサー）が、面識のない脚本家の創造的潜在力をどのように評価するのかを検討する。分析からは、<strong>二重プロセスの社会的判断モデル</strong>が見いだされた。第一は<strong>人物カテゴリー化</strong>であり、専門家は行動的・身体的手がかりを用いて、売り込み手を創造的／非創造的な7つのプロトタイプに当てはめる。第二は<strong>関係カテゴリー化</strong>であり、専門家は相互作用の手がかりと自己認知を用いて、売り込み手との関係を2つの関係プロトタイプに当てはめる。
+      </div>
+      <a class="doi-link" href="https://doi.org/10.5465/30040624" target="_blank" rel="noopener">📄 原文を読む (DOI) ↗</a>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-num">36</div><div class="stat-label">インフォーマント総数</div></div>
+      <div class="stat-box"><div class="stat-num">28</div><div class="stat-label">観察したピッチ</div></div>
+      <div class="stat-box"><div class="stat-num">7</div><div class="stat-label">人物プロトタイプ</div></div>
+      <div class="stat-box"><div class="stat-num">2</div><div class="stat-label">関係プロトタイプ</div></div>
+      <div class="stat-box"><div class="stat-num">約5年</div><div class="stat-label">調査期間</div></div>
+    </div>
+
+    <div class="collapsible-header" data-target="bg-body">
+      <h3>研究の背景とリサーチ・クエスチョン</h3>
+      <span class="collapsible-arrow open">▼</span>
+    </div>
+    <div class="collapsible-body" id="bg-body">
+      <div class="card">
+        <div class="highlight">
+          <strong>主要なリサーチ・クエスチョン：</strong><br>
+          1. 専門家は、知覚した属性と業界のプロトタイプをどのように用いて、他者の創造的潜在力を評価するのか。<br>
+          2. 評価プロセスの対人的（動的）な性質は、創造性判断にどのような影響を及ぼすのか。
+        </div>
+        <p style="margin-top:1rem; color: var(--muted); font-size:0.92rem;">
+          製品デザイン、マーケティング、映像制作、ベンチャー投資など多くの業界では、新しいアイデアやその提案者の創造的潜在力は、まず第一に対面の「ピッチ（売り込み）」での主観的な印象に基づいて評価される。しかし、この判断プロセスはこれまで組織研究者から体系的な注目を受けてこなかった。本研究が扱うのは、個人の実際の創造性の客観的評価ではなく、創造的潜在力に対する<strong>主観的な知覚</strong>である。
+        </p>
+      </div>
+    </div>
+
+    <div class="collapsible-header" data-target="context-body">
+      <h3>研究の舞台：ハリウッドのピッチ・ミーティング</h3>
+      <span class="collapsible-arrow open">▼</span>
+    </div>
+    <div class="collapsible-body" id="context-body">
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <tr><th>役割</th><th>定義</th><th>主たる目的</th></tr>
+            <tr><td><strong>売り込み手（pitcher）</strong></td><td>脚本のアイデアを売り込む脚本家</td><td>自分には継続的に優れたアイデアを生み出せるだけの創造性があると示す</td></tr>
+            <tr><td><strong>受け手（catcher）</strong></td><td>プロデューサーまたはスタジオ幹部</td><td>短時間のうちに売り込み手の創造的潜在力を見極める</td></tr>
+          </table>
+        </div>
+        <div class="highlight" style="margin-top:1rem;">
+          <strong>高リスクの意思決定：</strong>平均的なピッチは20分に満たない。創造的と判断された売り込み手には、利益の大きい開発契約という報酬が待つ。一方で、受け手にとっても判断の重みは大きい。年間数百件の企画のうちゴーサイン（開発承認）を出せるのはごく一部であり、『E.T.』『スター・ウォーズ』『タイタニック』『トゥルーマン・ショー』『となりのサインフェルド』といった後の大ヒット作を「見送って」しまった事例は、業界では語り草となっている。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TAB 2: 研究方法 ===== -->
+  <section id="tab-method" class="section">
+    <div class="card">
+      <div class="card-title">研究デザイン：質的・帰納的アプローチ</div>
+      <p style="color:var(--muted); font-size:0.92rem; margin-bottom:1rem;">本研究は「理論精緻化（theory elaboration）」（Lee, Mitchell, &amp; Sablynski, 1999）の質的研究アプローチを採用した。既存の概念モデルを出発点としつつ、動的で対話的な現実のプロセスを分析するのに適している。調査は1996年秋から2001年夏にかけて、ハリウッドのテレビおよび長編映画業界で実施された。</p>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-num">17</div><div class="stat-label">脚本家</div></div>
+        <div class="stat-box"><div class="stat-num">13</div><div class="stat-label">プロデューサー</div></div>
+        <div class="stat-box"><div class="stat-num">6</div><div class="stat-label">エージェント</div></div>
+        <div class="stat-box"><div class="stat-num">3</div><div class="stat-label">脚本講座の観察</div></div>
+      </div>
+    </div>
+
+    <div class="collapsible-header" data-target="data-body">
+      <h3>データの源泉</h3>
+      <span class="collapsible-arrow open">▼</span>
+    </div>
+    <div class="collapsible-body" id="data-body">
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <tr><th>データの種類</th><th>件数・規模</th><th>内容</th></tr>
+            <tr><td>非構造化インタビュー</td><td>36名（2巡に分けて実施）</td><td>脚本家・プロデューサー・エージェント。3大ネットワーク（ABC・NBC・CBS）やワーナー、MGM、パラマウントなどの出身者を含む</td></tr>
+            <tr><td>ピッチの観察</td><td>28件</td><td>ビデオ収録7件、生のピッチへの同席5件、インタビュー中の再現実演16件</td></tr>
+            <tr><td>脚本講座</td><td>3講座（各約2時間）</td><td>南カリフォルニアの2つの映画学校。全編を録音・文字起こし</td></tr>
+            <tr><td>アーカイブ資料</td><td>複数の専門書</td><td>脚本・制作の専門家による一次的な体験記</td></tr>
+            <tr><td>事後の専門家インタビュー</td><td>業界の重鎮4名</td><td>大手スタジオの元責任者、アカデミー賞・エミー賞受賞者など。モデルの妥当性を検証</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="collapsible-header" data-target="analysis-body">
+      <h3>データ分析の4段階</h3>
+      <span class="collapsible-arrow open">▼</span>
+    </div>
+    <div class="collapsible-body" id="analysis-body">
+      <div class="card">
+        <div class="process-flow">
+          <div class="process-box">段階1<br><small>創造性／非創造性の手がかりを特定</small></div>
+          <div class="process-arrow">→</div>
+          <div class="process-box accent2">段階2<br><small>売り込み手のプロトタイプを特定</small></div>
+          <div class="process-arrow">→</div>
+          <div class="process-box accent">段階3<br><small>関係カテゴリー化の手がかりを発見</small></div>
+          <div class="process-arrow">→</div>
+          <div class="process-box" style="background:#5b21b6;">段階4<br><small>関係プロトタイプを検証</small></div>
+        </div>
+        <p style="font-size:0.88rem; color:var(--muted); margin-top:0.8rem;">3名の研究者が独立してコーディングを行い、解釈の相違は合意に達するまで議論した。<strong>強い証拠</strong>＝インタビュー・観察・アーカイブの3種すべてで一貫して描写されていたもの。<strong>中程度の証拠</strong>＝いずれか1種の源泉のなかで一貫して描写されていたもの。分析の結果、創造性を判断する15の手がかりと、非創造性を判断する4つの手がかりが見いだされた。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TAB 3: プロセス1 ===== -->
+  <section id="tab-process1" class="section">
+    <div class="card">
+      <div class="card-title">プロセス1：人物カテゴリー化とプロトタイプ照合</div>
+      <p style="color:var(--muted); font-size:0.92rem;">受け手は、売り込み手の行動的・身体的な手がかりを用いて、相手をよく知られた7つのプロトタイプのいずれかに当てはめる。各プロトタイプは、それぞれ異なる水準の創造性・非創造性に対応している。</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">7つの売り込み手プロトタイプ一覧</div>
+      <div class="proto-grid">
+        <div class="proto-card proto-high">
+          <h4>🎨 アーティスト型</h4>
+          <span class="badge badge-high">高い創造性</span>
+          <p style="margin-top:0.5rem;">才能はあるが売り込みは下手。風変わりで型破り、身なりは整っていないが情熱的</p>
+        </div>
+        <div class="proto-card proto-high">
+          <h4>📖 ストーリーテラー型</h4>
+          <span class="badge badge-high">高い創造性</span>
+          <p style="margin-top:0.5rem;">芝居がかっていて魅力的、語りが巧み。ありふれた話も鮮やかに聞かせる</p>
+        </div>
+        <div class="proto-card proto-mid">
+          <h4>🎬 ショーランナー型</h4>
+          <span class="badge badge-mid">中程度の創造性</span>
+          <p style="margin-top:0.5rem;">執筆もシリーズ運営もこなせる。魅力があり機知に富み、プロフェッショナル</p>
+        </div>
+        <div class="proto-card proto-mid">
+          <h4>🌱 新人型</h4>
+          <span class="badge badge-mid">中程度の創造性</span>
+          <p style="margin-top:0.5rem;">若く情熱的だが経験が浅い。素朴さがかえって新鮮さの源泉とみなされる</p>
+        </div>
+        <div class="proto-card proto-mid">
+          <h4>⚙️ 職人型</h4>
+          <span class="badge badge-mid">中程度の創造性</span>
+          <p style="margin-top:0.5rem;">定型をこなす執行力に長ける。信頼できるが独創性には乏しい</p>
+        </div>
+        <div class="proto-card proto-mid">
+          <h4>💼 ディールメーカー型</h4>
+          <span class="badge badge-mid">中程度の創造性</span>
+          <p style="margin-top:0.5rem;">商業的価値を重視し、他人のアイデアを売り込む。魅力的だが商業色が濃い</p>
+        </div>
+        <div class="proto-card proto-low">
+          <h4>❌ ノンライター型</h4>
+          <span class="badge badge-low">低い創造性</span>
+          <p style="margin-top:0.5rem;">真の執筆才能を欠く。口先だけで調子がよく、定型的で、冷めているか必死すぎる</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">プロトタイプ別 主要手がかりの数</div>
+      <div class="chart-wrap">
+        <canvas id="cuesChart"></canvas>
+      </div>
+    </div>
+
+    <div class="collapsible-header" data-target="creative-cues-body">
+      <h3>創造性の手がかり：高創造性プロトタイプを活性化する</h3>
+      <span class="collapsible-arrow open">▼</span>
+    </div>
+    <div class="collapsible-body" id="creative-cues-body">
+      <div class="card">
+        <div class="highlight">
+          <strong>「ウディ・アレン効果」：</strong>知覚された「欠点」（口下手、不安げな様子など）が、かえって創造性の評価を高めることがある。受け手は、こうした人物には豊かな内面世界があり、表現ではなく執筆そのものにエネルギーを注いでいるとみなすのである。
+        </div>
+        <blockquote style="margin-top:1rem;">
+          「ときに、部屋のなかで退屈な脚本家ほど、書くものは良いと思えるものだ。彼には内面の世界があって、まさにそこに本領があるからだ。彼はそれを紙に書き起こし、プレゼンの体裁などに時間を浪費しない。」
+        </blockquote>
+        <p style="font-size:0.88rem; color:var(--muted); margin-top:0.8rem;">
+          <strong>反直観的な発見：</strong>専門家が用いる手がかりの一部（自信のなさ、不安げな様子など）は、実証研究において実際の創造性と結びつくとされる特性（良好なコミュニケーション力、自信、多様な専門知識など）とはむしろ正反対である。
+        </p>
+      </div>
+    </div>
+
+    <div class="collapsible-header" data-target="uncreative-cues-body">
+      <h3>非創造性の手がかり：「ノンライター型」判断の引き金</h3>
+      <span class="collapsible-arrow open">▼</span>
+    </div>
+    <div class="collapsible-body" id="uncreative-cues-body">
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <tr><th>非創造性の手がかり</th><th>典型的なふるまい</th><th>影響</th></tr>
+            <tr><td>口先だけで調子がよすぎる</td><td>中古車のセールスマンのように過剰に飾り立てる</td><td>即座かつ持続的な否定的判断</td></tr>
+            <tr><td>定型的な売り込み</td><td>暗記したような棒読みで、自然な手触りがない</td><td>真の創造性がないとみなされる</td></tr>
+            <tr><td>冷めている／情熱の欠如</td><td>自分のアイデアに無関心</td><td>創造的潜在力を即座に否定される</td></tr>
+            <tr><td>必死さ</td><td>過度に着飾り、媚びるように頑張りすぎる</td><td>書き手としての本物の自信を欠くとみなされる</td></tr>
+          </table>
+        </div>
+        <div class="highlight" style="margin-top:1rem;">
+          <strong>重要な発見：</strong>非創造性の手がかりは数こそ少ない（わずか4つ）が、判断における重みは極めて大きい。ピッチの早い段階で一度引き金が引かれると、後から挽回することはほぼ不可能である。これは、社会的判断における否定的情報の<strong>非対称的効果</strong>と一致する。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TAB 4: プロセス2 ===== -->
+  <section id="tab-process2" class="section">
+    <div class="card">
+      <div class="card-title">プロセス2：関係カテゴリー化とプロトタイプ照合</div>
+      <p style="color:var(--muted); font-size:0.92rem;">受け手は売り込み手の行動だけでなく、相互作用のなかで生じる自分自身の反応や行動、自己認知にも注意を向け、それをもとに売り込み手との関係をカテゴリー化する。</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">2つの関係プロトタイプ</div>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:1rem;">
+        <div style="background: linear-gradient(135deg,#d1fae5,#ecfdf5); border-radius:var(--radius); padding:1.2rem; border:1px solid #6ee7b7;">
+          <h4 style="color:#065f46; margin-bottom:0.5rem;">🤝 創造的コラボレーター</h4>
+          <span class="badge badge-high">高い創造性と判断</span>
+          <p style="font-size:0.88rem; margin-top:0.7rem; color:#065f46;">受け手は高揚感を覚え、自らアイデアを出し、「私たち」という言葉を使い、「なるほど」という気づきを体験する。両者が、それぞれ単独では到達できない新しいアイデアを共に生み出していく関係。</p>
+        </div>
+        <div style="background: linear-gradient(135deg,#fee2e2,#fff1f2); border-radius:var(--radius); padding:1.2rem; border:1px solid #fca5a5;">
+          <h4 style="color:#991b1b; margin-bottom:0.5rem;">👨‍🏫 専門家–素人ペア</h4>
+          <span class="badge badge-low">低い創造性と判断</span>
+          <p style="font-size:0.88rem; margin-top:0.7rem; color:#991b1b;">受け手は自分のほうが専門家だと感じ、売り込み手を「指導」し始める。注意が散漫になり、創造的な提案ではなく官僚的な要求を持ち出す。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="collapsible-header" data-target="collab-body">
+      <h3>創造的コラボレーター：主要な手がかりとメカニズム</h3>
+      <span class="collapsible-arrow open">▼</span>
+    </div>
+    <div class="collapsible-body" id="collab-body">
+      <div class="card">
+        <div class="chart-wrap">
+          <canvas id="relationalChart"></canvas>
+        </div>
+        <blockquote style="margin-top:1rem;">
+          「あるピッチのことを覚えている。最後にはその脚本家がすっかり気に入ってしまった。彼は30分間話し続けたが、私はやめてほしくなかった。もっと聞きたくて、気づけば私のほうから『これはどう思う？』『あれはどう思う？』と相手をつついていた。20もの違う話題について語り合っていたんだ。」
+        </blockquote>
+        <div class="highlight">
+          <strong>戦略的示唆：</strong>巧みな売り込み手は、受け手から質問を引き出すよう積極的に誘導し、受け手自身がアイデアの共同創造者だと感じられるように仕向ける。あるプロデューサーの言葉を借りれば、人は「自分の口から出したときにはじめて、そのアイデアを本気で受け入れる」のである。
+        </div>
+      </div>
+    </div>
+
+    <div class="collapsible-header" data-target="expert-body">
+      <h3>専門家–素人ペア：発動のメカニズムと帰結</h3>
+      <span class="collapsible-arrow open">▼</span>
+    </div>
+    <div class="collapsible-body" id="expert-body">
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <tr><th>引き金となる手がかり</th><th>受け手の反応</th><th>創造性判断への影響</th></tr>
+            <tr><td>売り込み手が助言に耳を貸さない</td><td>注意が散漫になり、別の企画のことを考え始める</td><td>創造性の評価が大きく下がる</td></tr>
+            <tr><td>売り込み手が相互作用に応じられない</td><td>「協力者」ではなく「教師」の立場にいると感じる</td><td>売り込み手をアマチュアとみなす</td></tr>
+            <tr><td>受け手が官僚的な要求を出す</td><td>あらすじ提出など手続き的な要求をする</td><td>実質的にはすでに創造性を否定している</td></tr>
+          </table>
+        </div>
+        <blockquote style="margin-top:1rem;">
+          「うまくいかないピッチでは、相手が譲ろうとせず、人の話をよく聞かない。私の時間は貴重だ。こちらが懸念を伝え始めても相手が聞いていないと、私は次第に上の空になり、頭が別のことへ流れ出す。そして、もう自分は相手の話を本当には聞いていない、別の企画のことを考えていると気づいたとき、ああこの人はもうダメだ、とわかるんだ。」
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TAB 5: 二重プロセス・モデル ===== -->
+  <section id="tab-model" class="section">
+    <div class="card">
+      <div class="card-title">創造性評価の二重プロセス・モデル</div>
+      <div class="figure-wrap">
+        <img src="https://pub-cdn.sider.ai/u/U0R7HR91ZX5/file/00ecd1dc-fb8b-490d-9720-9c419c4b3b55/899131f886ecd3a39b4e1c09e030e0b9c1a3fb6a0c2596f36000a089b7012c7c.jpg" alt="二重プロセス・モデルの図">
+        <div class="figure-caption">図1：創造性評価の二重プロセス・モデル（原論文の図に基づく）</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">モデルの核心的なロジック</div>
+      <div class="process-flow">
+        <div class="process-box accent2">売り込み手の<br>行動・身体的手がかり</div>
+        <div class="process-arrow">→</div>
+        <div class="process-box">人物カテゴリー化<br>プロトタイプ照合</div>
+        <div class="process-arrow">→</div>
+        <div class="process-box accent" style="background:#10b981;">創造的潜在力の<br>総合的判断</div>
+      </div>
+      <div class="process-flow" style="margin-top:0.5rem;">
+        <div class="process-box accent2">相互作用のなかの<br>自己認知の手がかり</div>
+        <div class="process-arrow">→</div>
+        <div class="process-box">関係カテゴリー化<br>プロトタイプ照合</div>
+        <div class="process-arrow">→</div>
+        <div class="process-box accent" style="background:#10b981;">創造的潜在力の<br>総合的判断</div>
+      </div>
+      <div class="highlight" style="margin-top:1rem;">
+        <strong>2つのプロセスは同時に、あるいは交互に進行し、</strong>いずれもピッチ開始後の数秒以内に立ち上がる。事後にインタビューした業界の重鎮4名はいずれも、この二重プロセス・モデルの説明力を裏づけた。ある専門家は次のように述べている。「ピッチを聞いているとき、私は、売り込み手が実際に何を語り、何をしているかと同じくらい、自分自身の反応に注意を払っている。」
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">2つのプロセスの比較</div>
+      <div class="chart-wrap">
+        <canvas id="comparisonChart"></canvas>
+      </div>
+    </div>
+
+    <div class="collapsible-header" data-target="asymmetry-body">
+      <h3>重要な発見：否定的な手がかりの非対称的効果</h3>
+      <span class="collapsible-arrow open">▼</span>
+    </div>
+    <div class="collapsible-body" id="asymmetry-body">
+      <div class="card">
+        <div class="highlight">
+          <strong>非創造性の手がかりは数は少ない（4つ）が、重みは極めて大きい：</strong>ある特性（ここでは創造性）についての合意度が高くない場合、その反対の特性（非創造性）を見分けるほうがかえって容易であり、関連する手がかりが判断において大きな重みを占める。いったん引き金が引かれると、その後のピッチで挽回することはほぼ不可能である。
+        </div>
+        <p style="font-size:0.88rem; color:var(--muted); margin-top:0.8rem;">
+          さらに、創造性・非創造性の判断に用いられる手がかりの少なくとも一部は、実証研究で実際の創造性を促すとされる特性（自信、多様な専門知識など）とは逆の方向を向いている。これは、専門家の直観的判断に体系的なバイアスが潜んでいる可能性を示唆する。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TAB 6: 理論と実践 ===== -->
+  <section id="tab-implications" class="section">
+    <div class="collapsible-header" data-target="theory-body">
+      <h3>理論的貢献</h3>
+      <span class="collapsible-arrow open">▼</span>
+    </div>
+    <div class="collapsible-body" id="theory-body">
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <tr><th>貢献の側面</th><th>具体的内容</th></tr>
+            <tr><td>プロトタイプ照合理論の拡張</td><td>創造性評価におけるプロトタイプ照合の中心的役割を、実験室の外で検証した数少ない研究の一つ。専門家が抱くプロトタイプは、実験室研究で見られるものより豊かで微妙な陰影を備えていた</td></tr>
+            <tr><td>非対称的効果の発見</td><td>否定的情報の非対称的効果を、創造性判断の領域ではじめて実証した</td></tr>
+            <tr><td>関係カテゴリー化という次元の導入</td><td>評価者自身の自己認知と関係カテゴリー化が、創造性判断に独自の影響を及ぼすことを明らかにした</td></tr>
+            <tr><td>実験室研究の外的妥当性への問い</td><td>動的・対話的な特徴は伝統的な実験室パラダイムでは「統制」され排除されてしまい、重要な文脈的手がかりが見落とされてきた</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="collapsible-header" data-target="practical-body">
+      <h3>実践的示唆</h3>
+      <span class="collapsible-arrow open">▼</span>
+    </div>
+    <div class="collapsible-body" id="practical-body">
+      <div class="card">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
+          <div style="background:#f0f9ff; border-radius:var(--radius); padding:1rem; border:1px solid #bae6fd;">
+            <h4 style="color:#0369a1; margin-bottom:0.5rem;">意思決定者にとって</h4>
+            <p style="font-size:0.85rem; color:#0c4a6e;">高創造性プロトタイプ（アーティスト型、新人型）の判断手がかりの一部は、実際の創造性と結びつく特性とは食い違う。その結果、プロトタイプには合致するが実際には創造性に乏しい人を採用し、プロトタイプには当てはまらないが真に創造的な人を見送るという、体系的な誤判断が生じうる。</p>
+          </div>
+          <div style="background:#fefce8; border-radius:var(--radius); padding:1rem; border:1px solid #fde68a;">
+            <h4 style="color:#92400e; margin-bottom:0.5rem;">売り込み手にとって</h4>
+            <p style="font-size:0.85rem; color:#78350f;">業界に固有のプロトタイプを理解し、特定の特性を意図的に前面に出したり抑えたりする。さらに、受け手を能動的に巻き込み、その創造的アイデンティティを刺激して「共同創造者」へと引き込むことが有効である。</p>
+          </div>
+          <div style="background:#fdf4ff; border-radius:var(--radius); padding:1rem; border:1px solid #e9d5ff;">
+            <h4 style="color:#6b21a8; margin-bottom:0.5rem;">潜在的なリスク（負の側面）</h4>
+            <p style="font-size:0.85rem; color:#581c87;">「創造性を演じる」のは巧みだが実際の創造性には乏しい人物が、社会的影響力と印象管理の技術を頼りに組織に入り込み、昇進していくおそれがある。それは最終的に組織の成果を損ないかねない。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="collapsible-header" data-target="limit-body">
+      <h3>研究の限界と今後の方向性</h3>
+      <span class="collapsible-arrow open">▼</span>
+    </div>
+    <div class="collapsible-body" id="limit-body">
+      <div class="card">
+        <ul style="font-size:0.9rem; color:var(--muted); padding-left:1.2rem; line-height:2;">
+          <li>ハリウッドは関係者同士のつながりが非常に密な社会的ネットワークであり、プロトタイプに関する合意度が他業界より高い可能性がある</li>
+          <li>映像業界は資金を得られる企画の数が少なく、開発コストが大きいため、非創造性の手がかりの重みが際立って高くなりやすい</li>
+          <li>創造性評価プロセスの普遍的な次元を見いだすには、組織を横断した比較研究が望まれる</li>
+          <li>今後は、異なる文化的背景のもとで創造性プロトタイプがどう異なるのかを探ることもできる</li>
+        </ul>
+        <blockquote style="margin-top:0.8rem;">
+          「伝説的な脚本家ウィリアム・ゴールドマンは、ヒットする映画のアイデアを見極めることについて『誰も何もわかっていない（Nobody knows nothing）』と断じた。しかし本研究の結果はその逆を示している――専門家は、どのような書き手が創造的なアイデアを生み出しやすいか、そしてそれを示す手がかりは何かについて、十分に発達した認識を持っている。こうした判断プロセスを心得ていることこそ、平凡なピッチと大ヒットとを分ける鍵なのかもしれない。」
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+</div><!-- end main-wrap -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  // ===== TAB SYSTEM =====
+  function initTabs() {
+    try {
+      var btns = document.querySelectorAll('.tab-btn');
+      var sections = document.querySelectorAll('.section');
+      if (!btns.length || !sections.length) {
+        console.warn('Tab elements not found');
+        return;
+      }
+      btns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          try {
+            var target = btn.getAttribute('data-tab');
+            if (!target) return;
+            btns.forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            sections.forEach(function(s) { s.classList.remove('active'); });
+            var targetSection = document.getElementById('tab-' + target);
+            if (targetSection) {
+              targetSection.classList.add('active');
+              console.log('Tab activated: ' + target);
+              initChartsForTab(target);
+            }
+          } catch(e) { console.error('Tab click error:', e); }
+        });
+      });
+      console.log('Tabs initialized:', btns.length);
+    } catch(e) { console.error('initTabs error:', e); }
+  }
+
+  // ===== COLLAPSIBLE =====
+  function initCollapsibles() {
+    try {
+      var headers = document.querySelectorAll('.collapsible-header');
+      headers.forEach(function(header) {
+        header.addEventListener('click', function() {
+          try {
+            var targetId = header.getAttribute('data-target');
+            if (!targetId) return;
+            var body = document.getElementById(targetId);
+            var arrow = header.querySelector('.collapsible-arrow');
+            if (!body) return;
+            if (body.classList.contains('hidden')) {
+              body.classList.remove('hidden');
+              if (arrow) arrow.classList.add('open');
+            } else {
+              body.classList.add('hidden');
+              if (arrow) arrow.classList.remove('open');
+            }
+          } catch(e) { console.error('Collapsible error:', e); }
+        });
+      });
+      console.log('Collapsibles initialized:', headers.length);
+    } catch(e) { console.error('initCollapsibles error:', e); }
+  }
+
+  // ===== CHART INSTANCES =====
+  if (!window.chartInstances) window.chartInstances = {};
+  var chartInitialized = {};
+
+  function initChartsForTab(tabName) {
+    try {
+      if (tabName === 'process1' && !chartInitialized['process1']) {
+        chartInitialized['process1'] = true;
+        initCuesChart();
+      }
+      if (tabName === 'process2' && !chartInitialized['process2']) {
+        chartInitialized['process2'] = true;
+        initRelationalChart();
+      }
+      if (tabName === 'model' && !chartInitialized['model']) {
+        chartInitialized['model'] = true;
+        initComparisonChart();
+      }
+    } catch(e) { console.error('initChartsForTab error:', e); }
+  }
+
+  function initCuesChart() {
+    try {
+      var canvas = document.getElementById('cuesChart');
+      if (!canvas) { console.warn('cuesChart canvas not found'); return; }
+      if (window.chartInstances['cuesChart']) {
+        window.chartInstances['cuesChart'].destroy();
+      }
+      var ctx = canvas.getContext('2d');
+      window.chartInstances['cuesChart'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['アーティスト型', 'ストーリーテラー型', 'ショーランナー型', '新人型', '職人型', 'ディールメーカー型', 'ノンライター型'],
+          datasets: [{
+            label: '手がかりの数',
+            data: [7, 8, 4, 4, 5, 3, 4],
+            backgroundColor: [
+              'rgba(16,185,129,0.8)',
+              'rgba(16,185,129,0.8)',
+              'rgba(245,158,11,0.8)',
+              'rgba(245,158,11,0.8)',
+              'rgba(245,158,11,0.8)',
+              'rgba(245,158,11,0.8)',
+              'rgba(239,68,68,0.8)'
+            ],
+            borderRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          aspectRatio: 1.8,
+          plugins: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: 'プロトタイプ別 主要手がかりの数',
+              font: { size: 13 }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: '手がかりの数' }
+            }
+          }
+        }
+      });
+      console.log('cuesChart initialized');
+    } catch(e) { console.error('initCuesChart error:', e); }
+  }
+
+  function initRelationalChart() {
+    try {
+      var canvas = document.getElementById('relationalChart');
+      if (!canvas) { console.warn('relationalChart canvas not found'); return; }
+      if (window.chartInstances['relationalChart']) {
+        window.chartInstances['relationalChart'].destroy();
+      }
+      var ctx = canvas.getContext('2d');
+      window.chartInstances['relationalChart'] = new Chart(ctx, {
+        type: 'bar',
+        indexAxis: 'y',
+        data: {
+          labels: ['熱意・高揚感', 'アイデアの提供', '「私たち」という言葉', '自ら質問する', '「なるほど」という気づき', '互いに競い合う雰囲気'],
+          datasets: [{
+            label: '言及した人数',
+            data: [23, 20, 12, 18, 7, 10],
+            backgroundColor: 'rgba(58,110,168,0.8)',
+            borderRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          aspectRatio: 1.6,
+          plugins: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: '創造的コラボレーター関係の主要手がかり（インフォーマントの言及件数）',
+              font: { size: 13 }
+            }
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              title: { display: true, text: '言及件数' }
+            }
+          }
+        }
+      });
+      console.log('relationalChart initialized');
+    } catch(e) { console.error('initRelationalChart error:', e); }
+  }
+
+  function initComparisonChart() {
+    try {
+      var canvas = document.getElementById('comparisonChart');
+      if (!canvas) { console.warn('comparisonChart canvas not found'); return; }
+      if (window.chartInstances['comparisonChart']) {
+        window.chartInstances['comparisonChart'].destroy();
+      }
+      var ctx = canvas.getContext('2d');
+      window.chartInstances['comparisonChart'] = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['手がかりの数', '合意度', '判断における重み', '挽回可能性', '発動の早さ'],
+          datasets: [
+            {
+              label: '人物カテゴリー化プロセス',
+              data: [85, 70, 65, 40, 60],
+              backgroundColor: 'rgba(26,39,68,0.15)',
+              borderColor: 'rgba(26,39,68,0.8)',
+              pointBackgroundColor: 'rgba(26,39,68,0.8)',
+              borderWidth: 2
+            },
+            {
+              label: '関係カテゴリー化プロセス',
+              data: [40, 80, 80, 30, 85],
+              backgroundColor: 'rgba(200,146,42,0.15)',
+              borderColor: 'rgba(200,146,42,0.9)',
+              pointBackgroundColor: 'rgba(200,146,42,0.9)',
+              borderWidth: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          aspectRatio: 1.5,
+          plugins: {
+            legend: { position: 'bottom' },
+            title: {
+              display: true,
+              text: '2つのカテゴリー化プロセスの特徴比較',
+              font: { size: 13 }
+            }
+          },
+          scales: {
+            r: {
+              beginAtZero: true,
+              max: 100,
+              ticks: { stepSize: 20, font: { size: 10 } },
+              pointLabels: { font: { size: 11 } }
+            }
+          }
+        }
+      });
+      console.log('comparisonChart initialized');
+    } catch(e) { console.error('initComparisonChart error:', e); }
+  }
+
+  // ===== RESIZE HANDLER =====
+  window.addEventListener('resize', function() {
+    try {
+      Object.keys(window.chartInstances).forEach(function(key) {
+        if (window.chartInstances[key] && typeof window.chartInstances[key].resize === 'function') {
+          window.chartInstances[key].resize();
+        }
+      });
+    } catch(e) { console.error('Resize error:', e); }
+  });
+
+  // ===== INIT =====
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing...');
+    initTabs();
+    initCollapsibles();
+    // Init chart for default active tab
+    initChartsForTab('overview');
+  });
+
+  window.addEventListener('load', function() {
+    console.log('Window loaded');
+    // Re-check active tab
+    var activeBtn = document.querySelector('.tab-btn.active');
+    if (activeBtn) {
+      var tab = activeBtn.getAttribute('data-tab');
+      if (tab) initChartsForTab(tab);
+    }
+  });
+
+})();
+</script>
+<script>window.parent.postMessage({ action: "ready" }, "*");
+
+window.console = new Proxy(console, {
+  get(target, prop) {
+    if (['log', 'warn', 'error'].includes(prop)) {
+      return new Proxy(target[prop], {
+        apply(fn, thisArg, args) {
+          fn.apply(thisArg, args);
+          window.parent.postMessage({ action: 'console',
+            type: prop,
+            args: args.map((arg) => {
+              try {
+                return JSON.stringify(arg).replace(/^["']|["']$/g, '');
+              } catch (e) {
+                return arg;
+              }
+            })
+          }, '*');
+        }
+      });
+    }
+    return target[prop];
+  }
+});
+</script></body>
+</html>
