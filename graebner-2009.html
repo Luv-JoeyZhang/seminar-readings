@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>買収における信頼の非対称性 - エグゼクティブ・レポート</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #1a1a2e;
+    background: #f8f9fa;
+    line-height: 1.6;
+}
+
+.tab-container {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.97);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 16px;
+    scrollbar-width: none;
+}
+
+.tab-container::-webkit-scrollbar {
+    display: none;
+}
+
+.tab-nav {
+    display: flex;
+    gap: 0;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 8px 0;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 10px 18px;
+    font-size: clamp(0.78rem, 2.2vw, 0.95rem);
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    white-space: nowrap;
+    border-radius: 4px 4px 0 0;
+}
+
+.tab-btn:hover {
+    color: #1a1a2e;
+    background: #f0f0f5;
+}
+
+.tab-btn.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+    background: #eef2ff;
+}
+
+.content-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+}
+
+.section {
+    display: none;
+    padding: 20px 0;
+}
+
+.section.active {
+    display: block;
+}
+
+.card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    padding: 24px;
+    margin-bottom: 24px;
+    border: 1px solid #e8e8ef;
+}
+
+.card h2 {
+    font-size: clamp(1.15rem, 3vw, 1.45rem);
+    color: #1e293b;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card h3 {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    color: #334155;
+    margin-bottom: 10px;
+    margin-top: 16px;
+}
+
+.card p, .card li {
+    font-size: clamp(0.88rem, 2.2vw, 1rem);
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.card ul {
+    padding-left: 20px;
+    margin-bottom: 10px;
+}
+
+.card ul li {
+    margin-bottom: 4px;
+}
+
+.collapsible-header {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+}
+
+.collapsible-header .toggle-icon {
+    font-size: 1.2rem;
+    transition: transform 0.25s;
+    color: #2563eb;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+
+.collapsible-header .toggle-icon.collapsed {
+    transform: rotate(-90deg);
+}
+
+.collapsible-content {
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+    max-height: 5000px;
+}
+
+.collapsible-content.hidden {
+    max-height: 0;
+}
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 16px 0;
+}
+
+.chart-box {
+    background: #fafbfc;
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    position: relative;
+}
+
+.chart-box h4 {
+    font-size: clamp(0.82rem, 2vw, 0.95rem);
+    color: #1e293b;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.chart-box canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 320px;
+    aspect-ratio: 4/3;
+}
+
+.highlight-box {
+    background: linear-gradient(135deg, #eef2ff, #f0f9ff);
+    border-left: 4px solid #2563eb;
+    padding: 18px 20px;
+    border-radius: 8px;
+    margin: 14px 0;
+}
+
+.highlight-box p {
+    font-size: clamp(0.88rem, 2.2vw, 1rem);
+    color: #1e293b;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin: 12px 0;
+}
+
+.stat-item {
+    text-align: center;
+    background: #f1f5f9;
+    padding: 14px 8px;
+    border-radius: 10px;
+}
+
+.stat-value {
+    font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+    font-weight: 700;
+    color: #2563eb;
+}
+
+.stat-label {
+    font-size: clamp(0.75rem, 1.8vw, 0.85rem);
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.badge {
+    display: inline-block;
+    background: #e2e8f0;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #475569;
+    margin-right: 6px;
+}
+
+.doi-link {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 8px 16px;
+    background: #2563eb;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: clamp(0.85rem, 2vw, 0.95rem);
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.doi-link:hover {
+    background: #1d4ed8;
+}
+
+.insight-callout {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 16px 0;
+}
+
+.insight-callout p {
+    color: #7c2d12;
+}
+
+.mermaid-container {
+    background: #fafbfc;
+    border-radius: 10px;
+    padding: 16px;
+    margin: 16px 0;
+    border: 1px solid #e2e8f0;
+    overflow-x: auto;
+}
+
+@media (max-width: 720px) {
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+    .content-wrapper {
+        padding: 16px 12px 40px;
+    }
+    .card {
+        padding: 16px;
+    }
+    .stat-grid {
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    }
+}
+
+@media (max-width: 400px) {
+    .tab-btn {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+    }
+    .card {
+        padding: 12px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="tab-container">
+    <div class="tab-nav" id="tabNav">
+        <button class="tab-btn active" data-tab="overview">概要</button>
+        <button class="tab-btn" data-tab="findings">研究の発見</button>
+        <button class="tab-btn" data-tab="trust-patterns">信頼のパターン</button>
+        <button class="tab-btn" data-tab="deception">欺瞞行動</button>
+        <button class="tab-btn" data-tab="recommendations">提言</button>
+    </div>
+</div>
+
+<div class="content-wrapper" id="contentWrapper">
+
+<div class="section active" id="section-overview">
+    <div class="card">
+        <div class="collapsible-header" data-toggle="overviewMain">
+            <h2>📋 研究の概観</h2>
+            <span class="toggle-icon" data-icon="overviewMain">▼</span>
+        </div>
+        <div class="collapsible-content" data-content="overviewMain">
+            <p><strong>タイトル：</strong> Caveat Venditor（売り手よ用心せよ）：ベンチャー企業の買収における信頼の非対称性</p>
+            <p><strong>著者：</strong> Melissa E. Graebner、テキサス大学オースティン校</p>
+            <p><strong>研究目的：</strong> 買収プロセスにおける買収企業と被買収企業（売り手）の間の信頼と欺瞞の複雑な関係を、ハイテク・ベンチャー企業に焦点を当てて検討する。本研究は、取引当事者が互いの信頼性に関して体系的な非対称性と誤認を抱いていることを示し、従来の組織間信頼研究が前提としてきた「信頼は対称的である」という想定と対比させる。</p>
+
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">対象ベンチャー企業</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">成立した買収</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">\$175M</div>
+                    <div class="stat-label">平均買収価格</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">80+</div>
+                    <div class="stat-label">詳細インタビュー</div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <p><strong>中心的な発見：</strong> 信頼の重要性に対する認識には、買収企業と売り手の間に根本的な非対称性が存在する。売り手は信頼を買収企業の選別における重要な基準とするのに対し、買収企業が不信を理由に取引を断念することはほとんどない。この非対称性によって売り手は欺瞞を受けやすくなり、買収企業はむしろ機会主義的に振る舞いやすくなる。</p>
+            </div>
+
+            <a class="doi-link" href="https://doi.org/10.5465/amj.2009.41330413" target="_blank" rel="noopener">📄 原文を読む (DOI) ↗</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="collapsible-header" data-toggle="methodology">
+            <h2>🔬 研究方法</h2>
+            <span class="toggle-icon" data-icon="methodology">▼</span>
+        </div>
+        <div class="collapsible-content" data-content="methodology">
+            <ul>
+                <li><strong>研究手法：</strong> 複数事例による定性研究（理論精緻化〔theory elaboration〕アプローチ）</li>
+                <li><strong>対象業界：</strong> ネットワーク機器、通信ソフトウェア、金融ソフトウェア、オンライン・コマースの4業界</li>
+                <li><strong>データ源：</strong> 半構造化された詳細インタビュー（80回超）、電子メールによる経過追跡、アーカイブ資料（企業ウェブサイト、業界誌、規制当局への提出書類）</li>
+                <li><strong>調査時期：</strong> 1999〜2000年の買収ブーム期。すべての買収はデータ収集の6か月以内に行われたもの</li>
+                <li><strong>買収プロセスの段階分析：</strong> スクリーニング → 親交（ソーシャライジング） → 原則合意 → 法的手続き → 統合の実施</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="section" id="section-findings">
+    <div class="card">
+        <div class="collapsible-header" data-toggle="findingsMain">
+            <h2>📊 主要な発見</h2>
+            <span class="toggle-icon" data-icon="findingsMain">▼</span>
+        </div>
+        <div class="collapsible-content" data-content="findingsMain">
+            <p>本研究は、買収プロセスの五つの段階における信頼と欺瞞の動態的な変化、ならびに買収企業と売り手の間に存在する体系的な認識のずれを明らかにした。</p>
+
+            <h3>1. スクリーニング段階：信頼の非対称性の発生</h3>
+            <p>売り手は買収企業の信頼性を重要な選別基準とした（12社中11社）が、買収企業は売り手の信頼性をほとんど考慮しなかった（8社中6社は最終的なターゲットを信頼していなかったが、それでも取引を進めた）。この非対称性は、買収後の権力移動の予期に起因する。売り手は支配権を失うがゆえに慎重になり、買収企業は支配権を得るがゆえに無頓着になるのである。</p>
+
+            <h3>2. 親交（ソーシャライジング）段階：相反する解釈</h3>
+            <p>同一の社交的やりとりが、双方によって正反対に解釈された。売り手はそれを信頼を築く誠実な交流とみなしたのに対し、買収企業は情報収集と相手を懐柔するための交渉戦術とみなした。</p>
+
+            <div class="insight-callout">
+                <p><strong>典型例 — RocketとNorth：</strong> 売り手のCEOはカフェでの面談を「オープンで率直な交流であり、信頼を築くものだった」と捉えていた。一方、買収企業の担当者は「我々はただ彼らから情報を引き出していただけだ」と述べ、買収価格（評価額）を抑えるために、売り手がベンチャーキャピタルからの出資を受けないよう意図的にミスリードしていた。</p>
+            </div>
+
+            <h3>3. 交渉（原則合意）段階：二種類の欺瞞</h3>
+            <p>本研究は二種類の欺瞞を区別した。<strong>交渉に関わる欺瞞</strong>（いわゆるブラフ＝はったり）と、<strong>実質的な欺瞞</strong>（人員削減計画の隠蔽など）である。買収企業は両方の欺瞞をより頻繁に行っており、欺瞞行動は「相手を信頼していないが、相手から信頼されていると感じている」という心理状態と強く関連していた。</p>
+
+            <h3>4. 法的手続き段階：非対称な防御策</h3>
+            <p>買収企業の8社中7社は徹底したデューデリジェンスを実施し、保護的な取引条件を設けた。一方、同様の防御策を講じた売り手は8社中2社にとどまった。売り手は買収企業を信頼するあまり、弁護士のリスク警告を無視することが多かった。</p>
+
+            <h3>5. 実施段階：買収企業による売り手の動機の誤認</h3>
+            <p>買収企業は、統合における軋轢は金銭的インセンティブで解決できると一様に考えていた。しかし売り手の経営陣は、自律性、業務上の影響力、技術ビジョンの実現をより重視していた。買収企業が非公式な約束を反故にすると、中核人材が大量に流出し、買収の失敗を招いた。</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📈 信頼の非対称性と欺瞞のパターン</h2>
+        <div class="chart-grid">
+            <div class="chart-box">
+                <h4>買収企業の行動パターン</h4>
+                <canvas id="chartBuyer"></canvas>
+            </div>
+            <div class="chart-box">
+                <h4>売り手の行動パターン</h4>
+                <canvas id="chartSeller"></canvas>
+            </div>
+        </div>
+        <div class="mermaid-container">
+            <div class="mermaid">
+                flowchart TD
+                    A["信頼の非対称性"] --> B["売り手は買収企業を信頼するが<br>買収企業は売り手を信頼しない"]
+                    A --> C["売り手は買収企業の信頼を誤解し<br>信頼されていると思い込む"]
+                    B --> D["買収企業が実質的な欺瞞を行う<br>(8件中3件)"]
+                    C --> E["売り手はほとんど防御策を講じない<br>(8件中わずか2件)"]
+                    D --> F["買収後の統合が失敗<br>中核人材の流出"]
+                    E --> F
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section" id="section-trust-patterns">
+    <div class="card">
+        <div class="collapsible-header" data-toggle="trustMain">
+            <h2>🔄 信頼のパターンと誤った認識</h2>
+            <span class="toggle-icon" data-icon="trustMain">▼</span>
+        </div>
+        <div class="collapsible-content" data-content="trustMain">
+            <p>本研究は、8組の取引について、買収企業と売り手が四つの重要な次元——相手の信頼性に対する認識、自分が信頼されているという感覚、そしてこれらの認識が実態とどの程度一致しているか——でどのような信頼状態にあったかを明らかにした。</p>
+
+            <div class="chart-box" style="margin: 16px 0;">
+                <h4>信頼の非対称性と誤認の集計</h4>
+                <canvas id="chartTrustErrors"></canvas>
+            </div>
+
+            <div class="highlight-box">
+                <p><strong>重要なデータ：</strong> 8組の取引のうち5組で「売り手は買収企業を信頼しているが、買収企業は売り手を信頼していない」という非対称性が存在した。売り手が買収企業の信頼性を誤認した割合は8件中7件（87.5%）にのぼり、買収企業が売り手の信頼を読み違えた割合は8件中5件（62.5%）であった。</p>
+            </div>
+
+            <h3>信頼の非対称性が生じる要因</h3>
+            <ul>
+                <li><strong>権力移動の予期：</strong> 買収後、売り手は支配権を失い、買収企業は支配権を得る——これが最も根本的な要因である</li>
+                <li><strong>競争の激しい業界環境：</strong> 「捕食者か獲物か」という心理が、他社への不信を強めた</li>
+                <li><strong>情報の非対称性：</strong> 買収企業は概してターゲット企業より歴史が長く規模も大きいため、自分の方が状況をよく把握していると考えがちだった</li>
+                <li><strong>役割分担の戦術：</strong> 買収企業は親交役と交渉役を分離し、売り手に強硬な振る舞いを企業全体ではなく個人の性格に帰属させた</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="section" id="section-deception">
+    <div class="card">
+        <div class="collapsible-header" data-toggle="deceptionMain">
+            <h2>🎭 欺瞞行動の分析</h2>
+            <span class="toggle-icon" data-icon="deceptionMain">▼</span>
+        </div>
+        <div class="collapsible-content" data-content="deceptionMain">
+            <h3>二種類の欺瞞</h3>
+            <div class="chart-grid">
+                <div class="chart-box">
+                    <h4>交渉に関わる欺瞞の件数</h4>
+                    <canvas id="chartNegDeception"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h4>実質的な欺瞞の件数</h4>
+                    <canvas id="chartMatDeception"></canvas>
+                </div>
+            </div>
+
+            <h3>欺瞞の心理メカニズム</h3>
+            <ul>
+                <li><strong>道徳的正当化：</strong> 買収企業は売り手を信頼していないがゆえに、欺瞞を「自衛」行為とみなした</li>
+                <li><strong>誘惑＋恐れ：</strong> 買収企業は売り手の信頼につけ込んで利益を得たいと考える一方で、売り手に出し抜かれることを恐れていた</li>
+                <li><strong>代償の過小評価：</strong> 買収企業は金銭的インセンティブで約束違反による損失を埋め合わせられると考え、非金銭的な動機の重要性を過小評価した</li>
+                <li><strong>交渉に関わる欺瞞の帰結：</strong> 通常は露見せず、「容認される交渉慣行」とみなされた</li>
+                <li><strong>実質的な欺瞞の帰結：</strong> 発覚すると人材流出と買収失敗を招いた（HarborによるIsle買収の「破滅的」な結末がその例）</li>
+            </ul>
+
+            <div class="insight-callout">
+                <p><strong>典型例 — CiaoによるGoalie買収：</strong> Goalieの創業者たちは「従業員を解雇しない・本社を移転しない」ことを取引の譲れない条件とした。Ciaoはこれらの条件を口頭で約束したが、内心では従業員の大半を解雇し、本社をカリフォルニアへ移転する計画を立てていた。GoalieはCiaoを信頼していたために相手の言葉を額面どおり受け取り、最終的に損害を被った。</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section" id="section-recommendations">
+    <div class="card">
+        <div class="collapsible-header" data-toggle="recMain">
+            <h2>💡 起業家への提言</h2>
+            <span class="toggle-icon" data-icon="recMain">▼</span>
+        </div>
+        <div class="collapsible-content" data-content="recMain">
+            <div class="highlight-box">
+                <p><strong>核心的なパラドックス：</strong> 信頼にもとづいて買収企業を選ぶことは、かえって売り手の脆弱性を高める。買収という状況は平時とは全く異なる行動パターンを引き起こすため、信頼によって買収企業の行動を確実に予測することはできないのである。</p>
+            </div>
+
+            <h3>実務上の提言</h3>
+            <ul>
+                <li><strong>懐疑心を保つ：</strong> 買収企業が信頼できそうに見えても、その発言を検証すること。信頼はデューデリジェンスの代わりにはならない。</li>
+                <li><strong>重要条件を書面化する：</strong> 重要な事項（人員削減、移転、自律性など）を口約束だけに頼らず、契約書で明確に取り決めておくこと。</li>
+                <li><strong>専門家の助言に従う：</strong> たとえ買収企業を信頼していても、弁護士や財務アドバイザーのリスク警告を重視すること。</li>
+                <li><strong>社交関係に警戒する：</strong> 人間関係や社交的な交流は、信頼性の確かな指標というよりも、偽りの安心感を生み出しかねない。</li>
+                <li><strong>代替案を確保する：</strong> 独立して事業を続ける、あるいは他の買収企業と交渉するという選択肢を残し、交渉上の立場を維持すること。</li>
+            </ul>
+
+            <div class="chart-box" style="margin: 16px 0;">
+                <h4>買収企業による売り手の動機の誤認</h4>
+                <canvas id="chartMotive"></canvas>
+            </div>
+
+            <p style="margin-top: 12px; font-style: italic; color: #64748b;">「買い手はたくさんの嘘を並べ立てることがある。『あなたをCEOにする、社長にする、あなたが次の後継者だ』とね。私はクライアントにこう言ってきた。『それは戯言だ。これは約束ではない。私はこの男を見抜いている、彼はやりはしない。それでもよくて、ただお金が欲しいだけならそれで構わない。だが、本当に自分がCEOになれると思っているなら、そんな理由でこの取引をしてはいけない』」——ある一流のテクノロジー投資銀行家（別の関係者から「M&Aの帝王」と呼ばれた人物）</p>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(function(){
+    'use strict';
+
+    if (!window.chartInstances) {
+        window.chartInstances = {};
+    }
+
+    function safeQuery(selector) {
+        const el = document.querySelector(selector);
+        if (!el) {
+            console.warn('Element not found:', selector);
+        }
+        return el;
+    }
+
+    function getTabElements() {
+        return document.querySelectorAll('.tab-btn');
+    }
+
+    function getSections() {
+        return document.querySelectorAll('.section');
+    }
+
+    // Tab system
+    function initTabs() {
+        const tabs = getTabElements();
+        const sections = getSections();
+
+        if (!tabs.length || !sections.length) {
+            console.error('Tab or section elements missing');
+            return;
+        }
+
+        tabs.forEach(function(tab) {
+            tab.addEventListener('click', function(e) {
+                try {
+                    const targetId = this.getAttribute('data-tab');
+                    if (!targetId) {
+                        console.warn('Tab missing data-tab attribute');
+                        return;
+                    }
+
+                    // Update tab styles
+                    tabs.forEach(function(t) {
+                        t.classList.remove('active');
+                    });
+                    this.classList.add('active');
+
+                    // Update sections
+                    sections.forEach(function(sec) {
+                        sec.classList.remove('active');
+                    });
+                    const targetSection = safeQuery('#section-' + targetId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+
+                    // Lazy load charts for the active section
+                    const canvases = targetSection ? targetSection.querySelectorAll('canvas[id]') : [];
+                    canvases.forEach(function(canvas) {
+                        var cid = canvas.id;
+                        if (cid && !window.chartInstances[cid]) {
+                            initChart(cid);
+                        }
+                    });
+
+                    console.log('Tab switched to:', targetId);
+                } catch(err) {
+                    console.error('Tab click error:', err);
+                }
+            });
+        });
+
+        console.log('Tab system initialized');
+    }
+
+    // Collapsible sections
+    function initCollapsible() {
+        const headers = document.querySelectorAll('[data-toggle]');
+        headers.forEach(function(header) {
+            header.addEventListener('click', function() {
+                try {
+                    const key = this.getAttribute('data-toggle');
+                    const content = document.querySelector('[data-content="' + key + '"]');
+                    const icon = document.querySelector('[data-icon="' + key + '"]');
+                    if (content) {
+                        content.classList.toggle('hidden');
+                    }
+                    if (icon) {
+                        icon.classList.toggle('collapsed');
+                    }
+                    console.log('Collapsible toggled:', key);
+                } catch(err) {
+                    console.error('Collapsible error:', err);
+                }
+            });
+        });
+        console.log('Collapsible sections initialized');
+    }
+
+    // Chart initialization functions
+    function initChart(chartId) {
+        try {
+            var canvas = document.getElementById(chartId);
+            if (!canvas) {
+                console.warn('Canvas not found:', chartId);
+                return;
+            }
+            var ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.warn('2D context not available for:', chartId);
+                return;
+            }
+
+            var config = getChartConfig(chartId);
+            if (!config) {
+                console.warn('No config for chart:', chartId);
+                return;
+            }
+
+            var chart = new Chart(ctx, config);
+            window.chartInstances[chartId] = chart;
+            console.log('Chart initialized:', chartId);
+        } catch(err) {
+            console.error('Chart init error for', chartId, ':', err);
+        }
+    }
+
+    function getChartConfig(chartId) {
+        var configs = {
+            chartBuyer: {
+                type: 'bar',
+                data: {
+                    labels: ['買収企業が売り手を信頼しない', '買収企業が売り手を信頼する'],
+                    datasets: [{
+                        label: '件数',
+                        data: [6, 2],
+                        backgroundColor: ['#ef4444', '#22c55e'],
+                        borderColor: ['#dc2626', '#16a34a'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: function(ctx) { return ctx.raw + ' 件'; } } }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(0,0,0,0.05)' } },
+                        y: { grid: { display: false } }
+                    }
+                }
+            },
+            chartSeller: {
+                type: 'bar',
+                data: {
+                    labels: ['売り手が買収企業を信頼する', '売り手が買収企業を信頼しない'],
+                    datasets: [{
+                        label: '件数',
+                        data: [7, 1],
+                        backgroundColor: ['#22c55e', '#ef4444'],
+                        borderColor: ['#16a34a', '#dc2626'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: function(ctx) { return ctx.raw + ' 件'; } } }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(0,0,0,0.05)' } },
+                        y: { grid: { display: false } }
+                    }
+                }
+            },
+            chartTrustErrors: {
+                type: 'bar',
+                data: {
+                    labels: ['買収企業は不信だが売り手は信頼', '売り手が買収企業の信頼性を過大評価', '買収企業が信頼されている感覚を過小評価'],
+                    datasets: [{
+                        label: '非対称性／誤認',
+                        data: [5, 7, 5],
+                        backgroundColor: ['#f59e0b', '#ef4444', '#8b5cf6'],
+                        borderColor: ['#d97706', '#dc2626', '#7c3aed'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        tooltip: { callbacks: { label: function(ctx) { return ctx.raw + ' 組'; } } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, max: 8, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            },
+            chartNegDeception: {
+                type: 'bar',
+                data: {
+                    labels: ['買収企業の交渉に関わる欺瞞', '売り手の交渉に関わる欺瞞'],
+                    datasets: [{
+                        label: '欺瞞を行った事例数',
+                        data: [7, 1],
+                        backgroundColor: ['#f59e0b', '#60a5fa'],
+                        borderColor: ['#d97706', '#3b82f6'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        tooltip: { callbacks: { label: function(ctx) { return ctx.raw + ' 件'; } } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, max: 8, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            },
+            chartMatDeception: {
+                type: 'bar',
+                data: {
+                    labels: ['買収企業の実質的な欺瞞', '売り手の実質的な欺瞞'],
+                    datasets: [{
+                        label: '欺瞞を行った事例数',
+                        data: [3, 0],
+                        backgroundColor: ['#ef4444', '#22c55e'],
+                        borderColor: ['#dc2626', '#16a34a'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        tooltip: { callbacks: { label: function(ctx) { return ctx.raw + ' 件'; } } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, max: 4, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            },
+            chartMotive: {
+                type: 'radar',
+                data: {
+                    labels: ['金銭的動機', '自律性', '技術的影響力', '従業員への配慮', '職場環境'],
+                    datasets: [{
+                        label: '売り手が実際に重視する程度',
+                        data: [4, 9, 8, 7, 6],
+                        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                        borderColor: '#2563eb',
+                        pointBackgroundColor: '#2563eb',
+                        borderWidth: 2
+                    }, {
+                        label: '買収企業による売り手の動機の誤認',
+                        data: [9, 2, 3, 1, 2],
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                        borderColor: '#ef4444',
+                        pointBackgroundColor: '#ef4444',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 10,
+                            grid: { color: 'rgba(0,0,0,0.08)' },
+                            pointLabels: { font: { size: 11 } }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    return ctx.dataset.label + ': ' + ctx.raw + '/10';
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        return configs[chartId] || null;
+    }
+
+    // Lazy load all charts for the initially active tab
+    function lazyLoadCharts() {
+        try {
+            var activeSection = document.querySelector('.section.active');
+            if (!activeSection) return;
+            var canvases = activeSection.querySelectorAll('canvas[id]');
+            canvases.forEach(function(c) {
+                var cid = c.id;
+                if (cid && !window.chartInstances[cid]) {
+                    initChart(cid);
+                }
+            });
+            console.log('Lazy loaded charts for initial section');
+        } catch(err) {
+            console.error('Lazy load error:', err);
+        }
+    }
+
+    // Resize handler
+    function setupResizeHandler() {
+        var resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                try {
+                    for (var key in window.chartInstances) {
+                        if (window.chartInstances.hasOwnProperty(key)) {
+                            var chart = window.chartInstances[key];
+                            if (chart && chart.resize) {
+                                chart.resize();
+                            }
+                        }
+                    }
+                    console.log('Charts resized on window resize');
+                } catch(err) {
+                    console.error('Resize handler error:', err);
+                }
+            }, 200);
+        });
+    }
+
+    // Main initialization
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded fired');
+        initTabs();
+        initCollapsible();
+        lazyLoadCharts();
+        setupResizeHandler();
+    });
+
+    window.addEventListener('load', function() {
+        console.log('window.load fired');
+        // Re-check and initialize any missed charts
+        var allCanvases = document.querySelectorAll('canvas[id]');
+        allCanvases.forEach(function(c) {
+            var cid = c.id;
+            if (cid && !window.chartInstances[cid]) {
+                initChart(cid);
+            }
+        });
+    });
+
+})();
+</script>
+<script>window.parent.postMessage({ action: "ready" }, "*");
+
+window.console = new Proxy(console, {
+  get(target, prop) {
+    if (['log', 'warn', 'error'].includes(prop)) {
+      return new Proxy(target[prop], {
+        apply(fn, thisArg, args) {
+          fn.apply(thisArg, args);
+          window.parent.postMessage({ action: 'console',
+            type: prop,
+            args: args.map((arg) => {
+              try {
+                return JSON.stringify(arg).replace(/^["']|["']$/g, '');
+              } catch (e) {
+                return arg;
+              }
+            })
+          }, '*');
+        }
+      });
+    }
+    return target[prop];
+  }
+});
+</script></body>
+</html>
